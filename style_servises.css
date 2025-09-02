@@ -1,0 +1,55 @@
+/* Стили для страницы услуг */
+.services-detail {
+    padding: 100px 0 50px;
+}
+
+.service-detail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+    margin-bottom: 5rem;
+}
+
+.service-image {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.service-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.service-content h3 {
+    font-size: 2rem;
+    color: #d4af37;
+    margin-bottom: 1.5rem;
+}
+
+.service-content p {
+    margin-bottom: 1.5rem;
+    line-height: 1.8;
+}
+
+.service-content ul {
+    list-style: none;
+    margin-bottom: 2rem;
+}
+
+.service-content ul li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+@media (max-width: 768px) {
+    .service-detail {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .service-detail:nth-child(even) .service-image {
+        order: -1;
+    }
+}
