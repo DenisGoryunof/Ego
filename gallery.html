@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Галерея работ салона красоты Ego в Севастополе. Фотографии результатов лазерной эпиляции, искусственного загара, маникюра и педикюра.">
+    <meta name="keywords" content="галерея салона красоты Севастополь, фото работ лазерная эпиляция, искусственный загар фото, маникюр педикюр фото">
+    <title>Галерея работ - Салон красоты Ego в Севастополе</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/gallery.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">Ego</a>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Главная</a></li>
+                    <li><a href="services.html">Услуги</a></li>
+                    <li><a href="gallery.html">Галерея</a></li>
+                    <li><a href="reviews.html">Отзывы</a></li>
+                    <li><a href="about.html">О нас</a></li>
+                    <li><a href="contact.html">Контакты</a></li>
+                </ul>
+            </nav>
+            <div class="header-contact">
+                <a href="tel:+79780000000">+7 (978) 000-00-00</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="gallery-hero">
+        <div class="container">
+            <h1>Наша галерея</h1>
+            <p>Результаты работ, которые говорят сами за себя</p>
+        </div>
+    </section>
+
+    <section class="gallery-content">
+        <div class="container">
+            <div class="gallery-filters">
+                <button class="filter-btn active" data-filter="all">Все работы</button>
+                <button class="filter-btn" data-filter="epilation">Лазерная эпиляция</button>
+                <button class="filter-btn" data-filter="tan">Искусственный загар</button>
+                <button class="filter-btn" data-filter="nails">Маникюр и педикюр</button>
+            </div>
+
+            <div class="gallery-grid">
+                <div class="gallery-item" data-category="epilation">
+                    <img src="assets/images/gallery/epilation-1.jpg" alt="Результат лазерной эпиляции ног">
+                    <div class="gallery-overlay">
+                        <h3>Лазерная эпиляция ног</h3>
+                        <p>Полный курс из 6 процедур</p>
+                    </div>
+                </div>
+                
+                <div class="gallery-item" data-category="epilation">
+                    <img src="assets/images/gallery/epilation-2.jpg" alt="Результат лазерной эпиляции зоны бикини">
+                    <div class="gallery-overlay">
+                        <h3>Эпиляция зоны бикини</h3>
+                        <p>Деликатная обработка</p>
+                    </div>
+                </div>
+                
+                <div class="gallery-item" data-category="tan">
+                    <img src="assets/images/gallery/tan-1.jpg" alt="Естественный искусственный загар">
+                    <div class="gallery-overlay">
+                        <h3>Искусственный загар</h3>
+                        <p>Естественный золотистый оттенок</p>
+                    </div>
+                </div>
+                
+                <div class="gallery-item" data-category="tan">
+                    <img src="assets/images/gallery/tan-2.jpg" alt="Ровный загар всего тела">
+                    <div class="gallery-overlay">
+                        <h3>Загар всего тела</h3>
+                        <p>Идеально ровное покрытие</p>
+                    </div>
+                </div>
+                
+                <div class="gallery-item" data-category="nails">
+                    <img src="assets/images/gallery/nails-1.jpg" alt="Классический маникюр">
+                    <div class="gallery-overlay">
+                        <h3>Классический маникюр</h3>
+                        <p>Аккуратная форма, идеальное покрытие</p>
+                    </div>
+                </div>
+                
+                <div class="gallery-item" data-category="nails">
+                    <img src="assets/images/gallery/nails-2.jpg" alt="Дизайн ногтей">
+                    <div class="gallery-overlay">
+                        <h3>Дизайн ногтей</h3>
+                        <p>Авторская роспись</p>
+                    </div>
+                </div>
+                
+                <div class="gallery-item" data-category="nails">
+                    <img src="assets/images/gallery/nails-3.jpg" alt="Педикюр">
+                    <div class="gallery-overlay">
+                        <h3>Педикюр</h3>
+                        <p>Профессиональный уход за стопами</p>
+                    </div>
+                </div>
+                
+                <div class="gallery-item" data-category="nails">
+                    <img src="assets/images/gallery/nails-4.jpg" alt="Наращивание ногтей">
+                    <div class="gallery-overlay">
+                        <h3>Наращивание ногтей</h3>
+                        <p>Идеальная форма и длина</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="booking">
+        <div class="container">
+            <h2>Записаться на прием</h2>
+            <form class="booking-form">
+                <input type="text" placeholder="Ваше имя" required>
+                <input type="tel" placeholder="Ваш телефон" required>
+                <select required>
+                    <option value="" disabled selected>Выберите услугу</option>
+                    <option value="epilation">Лазерная эпиляция</option>
+                    <option value="tan">Искусственный загар</option>
+                    <option value="manicure">Маникюр</option>
+                    <option value="pedicure">Педикюр</option>
+                </select>
+                <input type="date" required>
+                <button type="submit" class="btn">Отправить заявку</button>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Салон красоты Ego</h3>
+                    <p>Ваша красота - наша профессия</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Услуги</h4>
+                    <ul>
+                        <li><a href="services.html#epilation">Лазерная эпиляция</a></li>
+                        <li><a href="services.html#tan">Искусственный загар</a></li>
+                        <li><a href="services.html#nails">Маникюр и педикюр</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Контакты</h4>
+                    <p>г. Севастополь, ул. Примерная, 123</p>
+                    <p>Телефон: <a href="tel:+79780000000">+7 (978) 000-00-00</a></p>
+                    <p>Email: <a href="mailto:info@ego-sevastopol.ru">info@ego-sevastopol.ru</a></p>
+                </div>
+                <div class="footer-section">
+                    <h4>Мы в соцсетях</h4>
+                    <div class="social-icons">
+                        <a href="#"><img src="assets/icons/instagram.svg" alt="Instagram"></a>
+                        <a href="#"><img src="assets/icons/facebook.svg" alt="Facebook"></a>
+                        <a href="#"><img src="assets/icons/vk.svg" alt="VK"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Салон красоты Ego. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script src="js/gallery.js"></script>
+    <script src="js/form.js"></script>
+</body>
+</html>
