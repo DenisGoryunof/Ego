@@ -1,4 +1,14 @@
 /* Стили для страницы услуг */
+.services-hero {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('../assets/images/services-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    padding: 150px 0 100px;
+    text-align: center;
+    color: white;
+    margin-top: -80px;
+}
+
 .services-detail {
     padding: 100px 0 50px;
     background-color: #fafafa;
@@ -98,25 +108,28 @@
     margin-left: 5px;
 }
 
-.service-btn {
-    display: inline-block;
-    background: linear-gradient(135deg, #d4af37, #f4d03f);
-    color: white;
-    padding: 14px 35px;
-    border-radius: 30px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
-    border: none;
-    cursor: pointer;
-    text-decoration: none;
+/* Анимации */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.service-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
-    color: white;
+.service-detail {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.service-detail:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.service-detail:nth-child(3) {
+    animation-delay: 0.4s;
 }
 
 /* Адаптивность */
@@ -154,33 +167,4 @@
     .service-image img {
         height: 250px;
     }
-    
-    .service-btn {
-        padding: 12px 25px;
-        font-size: 0.9rem;
-    }
-}
-
-/* Анимации */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.service-detail {
-    animation: fadeInUp 0.6s ease forwards;
-}
-
-.service-detail:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.service-detail:nth-child(3) {
-    animation-delay: 0.4s;
 }
