@@ -150,3 +150,132 @@ if (typeof showNotification === 'undefined') {
         console.log(`${type}: ${message}`);
     };
 }
+
+
+// Инициализация мобильного меню
+function initMobileMenu() {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const mainNav = document.querySelector('.main-nav');
+    
+    if (menuToggle && mainNav) {
+        menuToggle.addEventListener('click', function() {
+            this.classList.toggle('active');
+            mainNav.classList.toggle('active');
+            document.body.style.overflow = mainNav.classList.contains('active') ? 'hidden' : '';
+        });
+        
+        // Закрытие меню при клике на ссылку
+        const navLinks = mainNav.querySelectorAll('a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                menuToggle.classList.remove('active');
+                mainNav.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
+        
+        // Закрытие меню при клике вне его области
+        document.addEventListener('click', function(e) {
+            if (mainNav.classList.contains('active') && 
+                !e.target.closest('.main-nav') && 
+                !e.target.closest('.menu-toggle')) {
+                menuToggle.classList.remove('active');
+                mainNav.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+    }
+}
+
+// Анимация появления элементов при скролле
+function initScrollAnimations() {
+    const revealElements = document.querySelectorAll('.reveal');
+    
+    if (revealElements.length > 0) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+        
+        revealElements.forEach(element => {
+            observer.observe(element);
+        });
+    }
+}
+
+// Инициализация плавающих кнопок
+function initFloatingButtons() {
+    const floatingButtons = document.querySelector('.floating-button');
+    if (!floatingButtons) {
+        // Создаем плавающие кнопки если их нет
+        const floatingDiv = document.createElement('div');
+        floatingDiv.className = 'floating-button';
+        floatingDiv.innerHTML = `
+            <a href="tel:+79780000000" class="call-button">
+                <i class="fas fa-phone"></i>
+            </a>
+            <a href="https://wa.me/79780000000" class="whatsapp-button" target="_blank">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+            <a href="https://t.me/egosevastopol" class="telegram-button" target="_blank">
+                <i class="fab fa-telegram"></i>
+            </a>
+        `;
+        document.body.appendChild(floatingDiv);
+    }
+}
+
+// Добавление классов анимации к элементам
+function addAnimationClasses() {
+    // Добавляем классы для анимации
+    const elementsToAnimate = [
+        '.service-card',
+        '.advantage', 
+        '.gallery-item',
+        '.review-card',
+        '.team-member',
+        '.testimonial'
+    ];
+    
+    elementsToAnimate.forEach(selector => {
+        document.querySelectorAll(selector).forEach((element, index) => {
+            element.classList.add('reveal');
+            element.style.transitionDelay = `${index * 0.1}s`;
+        });
+    });
+}
+
+// Инициализация всех анимаций
+document.addEventListener('DOMContentLoaded', function() {
+    initMobileMenu();
+    initScrollAnimations();
+    initFloatingButtons();
+    addAnimationClasses();
+    
+    // Добавляем Font Awesome если нет
+    if (!document.querySelector('link[href*="font-awesome"]')) {
+        const faLink = document.createElement('link');
+        faLink.rel = 'stylesheet';
+        faLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+        document.head.appendChild(faLink);
+    }
+});
+
+// Обработчик resize для меню
+window.addEventListener('resize', function() {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const mainNav = document.querySelector('.main-nav');
+    
+    if (window.innerWidth > 768 && mainNav) {
+        mainNav.classList.remove('active');
+        if (menuToggle) menuToggle.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+});
