@@ -108,3 +108,30 @@ function showNotification(message, type = 'success') {
         }, 300);
     }, 5000);
 }
+
+
+// Обработчик формы подписки
+function initNewsletterForm() {
+    const newsletterForm = document.querySelector('.newsletter-form');
+    
+    if (newsletterForm) {
+        newsletterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = this.querySelector('input[type="email"]').value;
+            
+            if (email) {
+                // Здесь отправка email на сервер
+                console.log('Email подписки:', email);
+                
+                showNotification('Спасибо за подписку! Проверьте вашу почту.', 'success');
+                this.reset();
+            }
+        });
+    }
+}
+
+// Инициализация при загрузке
+document.addEventListener('DOMContentLoaded', function() {
+    initNewsletterForm();
+});
