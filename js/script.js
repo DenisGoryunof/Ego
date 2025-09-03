@@ -135,3 +135,18 @@ function initNewsletterForm() {
 document.addEventListener('DOMContentLoaded', function() {
     initNewsletterForm();
 });
+
+// Проверка существования элементов перед добавлением обработчиков
+function safeAddEventListener(selector, event, handler) {
+    const element = document.querySelector(selector);
+    if (element) {
+        element.addEventListener(event, handler);
+    }
+}
+
+// Запасная функция уведомлений
+if (typeof showNotification === 'undefined') {
+    window.showNotification = function(message, type) {
+        console.log(`${type}: ${message}`);
+    };
+}

@@ -1,3 +1,26 @@
+/* Резервные переменные если другие CSS не загрузятся */
+:root {
+    --primary-color: #d4af37;
+    --secondary-color: #f4d03f;
+    --text-color: #333;
+    --light-bg: #fafafa;
+    --white: #ffffff;
+    --dark-bg: #333;
+}
+
+/* Базовые стили для всего */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
 /* Общие стили */
 * {
     margin: 0;
