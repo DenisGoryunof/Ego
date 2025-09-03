@@ -1,4 +1,4 @@
-// Общие скрипты для всех страниц
+// script.js (дополненный)
 document.addEventListener('DOMContentLoaded', function() {
     initMobileMenu();
     initScrollToTop();
@@ -6,142 +6,105 @@ document.addEventListener('DOMContentLoaded', function() {
     initLazyLoading();
     initCurrentPage();
     initHeaderScroll();
+    initErrorHandling();
 });
 
-// Инициализация мобильного меню
-function initMobileMenu() {
-    const menuToggle = document.querySelector('.menu-toggle');
-    const mainNav = document.querySelector('.main-nav');
-    
-    if (menuToggle && mainNav) {
-        menuToggle.addEventListener('click', function() {
-            this.classList.toggle('active');
-            mainNav.classList.toggle('active');
-            document.body.classList.toggle('menu-open');
-        });
-        
-        // Закрытие меню при клике на ссылку
-        const navLinks = mainNav.querySelectorAll('a');
-        navLinks.forEach(link => {
-            link.addEventListener('click', function() {
-                menuToggle.classList.remove('active');
-                mainNav.classList.remove('active');
-                document.body.classList.remove('menu-open');
+// Новая функция для обработки ошибок
+function initErrorHandling() {
+    // Проверка поддержки Service Worker для кеширования
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+                console.log('Service Worker registered:', registration);
+            })
+            .catch(error => {
+                console.error('Service Worker registration failed:', error);
             });
-        });
     }
-}
-
-// Кнопка "Наверх"
-function initScrollToTop() {
-    const scrollButton = document.querySelector('.scroll-to-top');
     
-    if (scrollButton) {
-        window.addEventListener('scroll', function() {
-            if (window.pageYOffset > 300) {
-                scrollButton.classList.add('visible');
-            } else {
-                scrollButton.classList.remove('visible');
-            }
-        });
-        
-        scrollButton.addEventListener('click', function() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-    }
-}
-
-// Плавная прокрутка
-function initSmoothScroll() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            const targetId = this.getAttribute('href');
-            if (targetId === '#' || targetId === '') return;
-            
-            const targetElement = document.querySelector(targetId);
-            if (targetElement) {
-                const headerHeight = document.querySelector('header').offsetHeight;
-                const targetPosition = targetElement.offsetTop - headerHeight;
-                
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                });
-                
-                // Обновляем URL без перезагрузки страницы
-                history.pushState(null, null, targetId);
-            }
-        });
+    // Обработка offline режима
+    window.addEventListener('online', function() {
+        showNotification('Соединение восстановлено', 'success');
     });
-}
-
-// Ленивая загрузка изображений
-function initLazyLoading() {
-    const lazyImages = document.querySelectorAll('img[data-src]');
     
-    if ('IntersectionObserver' in window) {
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    img.src = img.dataset.src;
-                    img.classList.remove('lazy-load');
-                    img.classList.add('loaded');
-                    observer.unobserve(img);
+    window.addEventListener('offline', function() {
+        showNotification('Отсутствует интернет-соединение', 'error');
+    });
+    
+    // Перехват ошибок AJAX запросов
+    const originalFetch = window.fetch;
+    window.fetch = function(...args) {
+        return originalFetch.apply(this, args)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
+                return response;
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                throw error;
             });
-        });
-        
-        lazyImages.forEach(img => imageObserver.observe(img));
-    } else {
-        // Fallback для старых браузеров
-        lazyImages.forEach(img => {
-            img.src = img.dataset.src;
-        });
+    };
+}
+
+// Функция для показа уведомлений
+function showNotification(message, type = 'success') {
+    // Убедимся, что стили для уведомлений добавлены
+    if (!document.getElementById('notification-styles')) {
+        const styles = document.createElement('style');
+        styles.id = 'notification-styles';
+        styles.textContent = `
+            .notification {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 8px;
+                color: white;
+                z-index: 10000;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                max-width: 350px;
+                backdrop-filter: blur(10px);
+            }
+            .notification.show {
+                transform: translateX(0);
+            }
+            .notification.success {
+                background: rgba(76, 175, 80, 0.9);
+            }
+            .notification.error {
+                background: rgba(244, 67, 54, 0.9);
+            }
+            .notification-content {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+        `;
+        document.head.appendChild(styles);
     }
-}
-
-// Подсветка текущей страницы в меню
-function initCurrentPage() {
-    const currentPage = location.pathname.split('/').pop();
-    const navLinks = document.querySelectorAll('.main-nav a');
     
-    navLinks.forEach(link => {
-        const linkPage = link.getAttribute('href');
-        if (linkPage === currentPage || (currentPage === '' && linkPage === 'index.html')) {
-            link.classList.add('active');
-        }
-    });
-}
-
-// Изменение хедера при скролле
-function initHeaderScroll() {
-    const header = document.querySelector('header');
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+            <span>${message}</span>
+        </div>
+    `;
     
-    window.addEventListener('scroll', function() {
-        if (window.scrollY > 100) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
-        }
-    });
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }, 5000);
 }
-
-// Быстрая загрузка шрифтов
-WebFontConfig = {
-    google: {
-        families: ['Playfair+Display:400,700', 'Roboto:300,400,500']
-    }
-};
-
-(function(d) {
-    var wf = d.createElement('script'), s = d.scripts[0];
-    wf.src = 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js';
-    wf.async = true;
-    s.parentNode.insertBefore(wf, s);
-})(document);
