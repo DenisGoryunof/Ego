@@ -18,6 +18,9 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}\.html -f
 RewriteRule ^(.*)$ $1.html [NC,L]
 
+/*    /index.html   200
+/404.html   404.html   404
+
 # Старые URL редиректы
 Redirect 301 /epilyaciya.html /services.html#epilation
 Redirect 301 /zagar.html /services.html#tan
