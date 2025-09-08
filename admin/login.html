@@ -1,57 +1,21 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Вход в админ-панель - EGO</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="css/admin.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body class="admin-login">
-    <div class="login-container">
-        <div class="login-card">
-            <div class="login-header">
-                <div class="admin-logo">
-                    <span class="logo-icon">✨</span>
-                    <span class="logo-text">EGO Admin</span>
-                </div>
-                <h1>Вход в панель управления</h1>
-            </div>
-
-            <form class="login-form" id="adminLoginForm">
-                <div class="form-group">
-                    <label for="username">Логин</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-user"></i>
-                        <input type="text" id="username" name="username" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Пароль</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="password" name="password" required>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-block">
-                    <i class="fas fa-sign-in-alt"></i>
-                    Войти
-                </button>
-
-                <div class="login-links">
-                    <a href="#" class="forgot-password">Забыли пароль?</a>
-                </div>
-            </form>
-
-            <div class="login-footer">
-                <p>© 2024 Салон красоты EGO. Все права защищены.</p>
-            </div>
-        </div>
+<!-- Замените форму на эту простую версию -->
+<form class="login-form" id="adminLoginForm">
+    <div class="form-group">
+        <label for="username">Логин</label>
+        <input type="text" id="username" name="username" required value="admin">
     </div>
 
-    <script src="js/admin.js"></script>
-</body>
-</html>
+    <div class="form-group">
+        <label for="password">Пароль (любой)</label>
+        <input type="password" id="password" name="password" placeholder="Введите любой пароль">
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-block">
+        <i class="fas fa-sign-in-alt"></i>
+        Войти
+    </button>
+
+    <div class="login-help">
+        <p><strong>Просто введите "admin" и любой пароль</strong></p>
+    </div>
+</form>

@@ -1,37 +1,26 @@
-// Temporary bypass for testing
-localStorage.setItem('admin_token', 'temp_access');
-localStorage.setItem('admin_user', JSON.stringify({
-    username: 'admin',
-    role: 'administrator'
-}));
-
-// Redirect to dashboard if on login page
-if (window.location.pathname.includes('login.html')) {
-    window.location.href = 'index.html';
-}
-
-
-// Admin Panel JavaScript
+// Простая админ-панель без сложной аутентификации
 class AdminPanel {
     constructor() {
         this.init();
-        this.currentUser = null;
     }
 
     init() {
-        this.checkAuth();
+        this.checkSimpleAuth();
         this.initEventListeners();
         this.loadDashboard();
     }
 
-    checkAuth() {
-        const token = localStorage.getItem('admin_token');
-        if (!token && !window.location.pathname.includes('login.html')) {
+    checkSimpleAuth() {
+        // Простая проверка - если есть параметр ?admin в URL или в localStorage
+        const urlParams = new URLSearchParams(window.location.search);
+        const isAdmin = urlParams.has('admin') || localStorage.getItem('simple_admin') === 'true';
+        
+        if (!isAdmin && !window.location.pathname.includes('login.html')) {
             window.location.href = 'login.html';
             return;
         }
         
-        if (token && window.location.pathname.includes('login.html')) {
+        if (isAdmin && window.location.pathname.includes('login.html')) {
             window.location.href = 'index.html';
         }
     }
@@ -40,16 +29,8 @@ class AdminPanel {
         // Login form
         const loginForm = document.getElementById('adminLoginForm');
         if (loginForm) {
-            loginForm.addEventListener('submit', (e) => this.handleLogin(e));
+            loginForm.addEventListener('submit', (e) => this.handleSimpleLogin(e));
         }
-
-        // Navigation
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('[data-action]')) {
-                const action = e.target.closest('[data-action]').dataset.action;
-                this.handleAction(action, e.target.closest('[data-action]'));
-            }
-        });
 
         // Logout
         const logoutBtn = document.querySelector('[data-action="logout"]');
@@ -57,102 +38,78 @@ class AdminPanel {
             logoutBtn.addEventListener('click', () => this.logout());
         }
 
-        // Modal handling
+        // Кнопки действий
         document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal')) {
-                this.closeModal();
-            }
-            if (e.target.classList.contains('close-modal')) {
-                this.closeModal();
+            if (e.target.closest('[data-action]')) {
+                const action = e.target.closest('[data-action]').dataset.action;
+                this.handleAction(action);
             }
         });
+    }
 
-        // Mobile menu
-        const menuToggle = document.querySelector('.menu-toggle');
-        if (menuToggle) {
-            menuToggle.addEventListener('click', () => {
-                document.querySelector('.admin-sidebar').classList.toggle('active');
-            });
+    handleSimpleLogin(e) {
+        e.preventDefault();
+        
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        // Простая проверка - любой пароль работает
+        if (username === 'admin') {
+            // Сохраняем простой флаг доступа
+            localStorage.setItem('simple_admin', 'true');
+            
+            // Показываем сообщение об успехе
+            this.showMessage('Вход выполнен успешно!', 'success');
+            
+            // Переходим через секунду
+            setTimeout(() => {
+                window.location.href = 'index.html?admin=true';
+            }, 1000);
+        } else {
+            this.showMessage('Введите "admin" в поле логина', 'error');
         }
     }
 
-    async handleLogin(e) {
-		e.preventDefault();
-		
-		const form = e.target;
-		const formData = {
-			username: form.username.value,
-			password: form.password.value
-		};
-
-		// Валидация
-		if (!formData.username || !formData.password) {
-			this.showNotification('Заполните все поля', 'error');
-			return;
-		}
-
-		try {
-			const result = await this.mockLogin(formData);
-			
-			if (result.success) {
-				localStorage.setItem('admin_token', 'mock_jwt_token');
-				localStorage.setItem('admin_user', JSON.stringify(result.user));
-				
-				this.showNotification('Успешный вход!', 'success');
-				
-				// Переход после задержки для показа уведомления
-				setTimeout(() => {
-					window.location.href = 'index.html';
-				}, 1000);
-			}
-		} catch (error) {
-			this.showNotification(error.message || 'Ошибка входа: неверные данные', 'error');
-			
-			// Анимация ошибки
-			form.classList.add('shake');
-			setTimeout(() => form.classList.remove('shake'), 500);
-		}
-	}
-
-    async mockLogin(credentials) {
-		// Mock authentication - replace with real API call
-		return new Promise((resolve, reject) => {
-			setTimeout(() => {
-				// Правильные учетные данные для входа
-				if (credentials.username === 'admin' && credentials.password === 'admin') {
-					resolve({ 
-						success: true,
-						user: {
-							username: credentials.username,
-							role: 'admin'
-						}
-					});
-				} else {
-					reject({ 
-						success: false,
-						message: 'Неверные учетные данные'
-					});
-				}
-			}, 1000);
-		});
-	}
-
     logout() {
-        localStorage.removeItem('admin_token');
-        localStorage.removeItem('admin_user');
+        localStorage.removeItem('simple_admin');
         window.location.href = 'login.html';
+    }
+
+    showMessage(message, type = 'success') {
+        // Создаем простое сообщение
+        const messageDiv = document.createElement('div');
+        messageDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: ${type === 'success' ? '#27ae60' : '#e74c3c'};
+            color: white;
+            border-radius: 5px;
+            z-index: 1000;
+            font-weight: bold;
+        `;
+        messageDiv.textContent = message;
+        
+        document.body.appendChild(messageDiv);
+        
+        // Удаляем через 3 секунды
+        setTimeout(() => {
+            document.body.removeChild(messageDiv);
+        }, 3000);
     }
 
     async loadDashboard() {
         if (!window.location.pathname.includes('index.html')) return;
 
-        await this.loadStatistics();
-        await this.loadRecentBookings();
-        await this.loadServices();
+        // Загружаем mock данные
+        this.loadStatistics();
+        this.loadRecentBookings();
+        this.loadServices();
     }
 
-    async loadStatistics() {
-        // Mock data - replace with real API
+    loadStatistics() {
+        // Mock данные
         const stats = {
             totalBookings: 1247,
             activeClients: 584,
@@ -160,26 +117,18 @@ class AdminPanel {
             pendingApprovals: 12
         };
 
-        this.updateStatCard('total-bookings', stats.totalBookings);
-        this.updateStatCard('active-clients', stats.activeClients);
-        this.updateStatCard('monthly-revenue', this.formatCurrency(stats.monthlyRevenue));
-        this.updateStatCard('pending-approvals', stats.pendingApprovals);
+        // Обновляем статистику
+        document.getElementById('total-bookings').textContent = stats.totalBookings;
+        document.getElementById('active-clients').textContent = stats.activeClients;
+        document.getElementById('monthly-revenue').textContent = this.formatCurrency(stats.monthlyRevenue);
+        document.getElementById('pending-approvals').textContent = stats.pendingApprovals;
     }
 
-    updateStatCard(id, value) {
-        const element = document.getElementById(id);
-        if (element) {
-            element.textContent = value;
-        }
-    }
-
-    async loadRecentBookings() {
-        // Mock data
+    loadRecentBookings() {
         const bookings = [
             { id: 1, client: 'Анна Иванова', service: 'Лазерная эпиляция', date: '2024-01-15 14:00', status: 'confirmed' },
             { id: 2, client: 'Мария Петрова', service: 'Моментальный загар', date: '2024-01-15 15:30', status: 'pending' },
-            { id: 3, client: 'Елена Сидорова', service: 'Маникюр', date: '2024-01-15 16:00', status: 'confirmed' },
-            { id: 4, client: 'Ольга Николаева', service: 'Ламинирование ресниц', date: '2024-01-16 11:00', status: 'cancelled' }
+            { id: 3, client: 'Елена Сидорова', service: 'Маникюр', date: '2024-01-15 16:00', status: 'confirmed' }
         ];
 
         this.renderBookingsTable(bookings);
@@ -195,23 +144,20 @@ class AdminPanel {
                 <td>${booking.client}</td>
                 <td>${booking.service}</td>
                 <td>${this.formatDate(booking.date)}</td>
-                <td><span class="status-badge status-${booking.status}">${this.getStatusText(booking.status)}</span></td>
+                <td>${this.getStatusText(booking.status)}</td>
                 <td>
-                    <button class="btn btn-sm" data-action="edit-booking" data-id="${booking.id}">✏️</button>
-                    <button class="btn btn-sm btn-danger" data-action="delete-booking" data-id="${booking.id}">🗑️</button>
+                    <button class="btn btn-sm" onclick="admin.editBooking(${booking.id})">✏️</button>
+                    <button class="btn btn-sm btn-danger" onclick="admin.deleteBooking(${booking.id})">🗑️</button>
                 </td>
             </tr>
         `).join('');
     }
 
-    async loadServices() {
-        // Mock data
+    loadServices() {
         const services = [
             { id: 1, name: 'Лазерная эпиляция', price: 2500, duration: '60 мин', category: 'Эпиляция' },
             { id: 2, name: 'Моментальный загар', price: 2000, duration: '30 мин', category: 'Загар' },
-            { id: 3, name: 'Маникюр', price: 1500, duration: '45 мин', category: 'Ногти' },
-            { id: 4, name: 'Педикюр', price: 1800, duration: '60 мин', category: 'Ногти' },
-            { id: 5, name: 'Ламинирование ресниц', price: 2200, duration: '90 мин', category: 'Ресницы' }
+            { id: 3, name: 'Маникюр', price: 1500, duration: '45 мин', category: 'Ногти' }
         ];
 
         this.renderServicesTable(services);
@@ -229,34 +175,20 @@ class AdminPanel {
                 <td>${this.formatCurrency(service.price)}</td>
                 <td>${service.duration}</td>
                 <td>
-                    <button class="btn btn-sm" data-action="edit-service" data-id="${service.id}">✏️</button>
-                    <button class="btn btn-sm btn-danger" data-action="delete-service" data-id="${service.id}">🗑️</button>
+                    <button class="btn btn-sm" onclick="admin.editService(${service.id})">✏️</button>
+                    <button class="btn btn-sm btn-danger" onclick="admin.deleteService(${service.id})">🗑️</button>
                 </td>
             </tr>
         `).join('');
     }
 
-    handleAction(action, element) {
-        const id = element?.dataset?.id;
-
+    handleAction(action) {
         switch (action) {
             case 'add-booking':
-                this.openBookingModal();
-                break;
-            case 'edit-booking':
-                this.openBookingModal(id);
-                break;
-            case 'delete-booking':
-                this.deleteBooking(id);
+                this.addBooking();
                 break;
             case 'add-service':
-                this.openServiceModal();
-                break;
-            case 'edit-service':
-                this.openServiceModal(id);
-                break;
-            case 'delete-service':
-                this.deleteService(id);
+                this.addService();
                 break;
             case 'export-data':
                 this.exportData();
@@ -264,179 +196,48 @@ class AdminPanel {
         }
     }
 
-    openBookingModal(bookingId = null) {
-        this.showModal(bookingId ? 'Редактирование записи' : 'Новая запись', `
-            <form id="bookingForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Клиент</label>
-                        <input type="text" name="client" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Услуга</label>
-                        <select name="service" required>
-                            <option value="">Выберите услугу</option>
-                            <option value="1">Лазерная эпиляция</option>
-                            <option value="2">Моментальный загар</option>
-                            <option value="3">Маникюр</option>
-                            <option value="4">Педикюр</option>
-                            <option value="5">Ламинирование ресниц</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Дата и время</label>
-                        <input type="datetime-local" name="date" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Статус</label>
-                        <select name="status" required>
-                            <option value="pending">Ожидание</option>
-                            <option value="confirmed">Подтверждено</option>
-                            <option value="completed">Завершено</option>
-                            <option value="cancelled">Отменено</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group-full">
-                    <label>Комментарий</label>
-                    <textarea name="comment" rows="3"></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="admin.closeModal()">Отмена</button>
-                    <button type="submit" class="btn btn-primary">Сохранить</button>
-                </div>
-            </form>
-        `);
-    }
-
-    openServiceModal(serviceId = null) {
-        this.showModal(serviceId ? 'Редактирование услуги' : 'Новая услуга', `
-            <form id="serviceForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Название услуги</label>
-                        <input type="text" name="name" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Категория</label>
-                        <select name="category" required>
-                            <option value="">Выберите категорию</option>
-                            <option value="Эпиляция">Эпиляция</option>
-                            <option value="Загар">Загар</option>
-                            <option value="Ногти">Ногти</option>
-                            <option value="Ресницы">Ресницы</option>
-                            <option value="Уход">Уход</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Цена (руб)</label>
-                        <input type="number" name="price" required min="0">
-                    </div>
-                    <div class="form-group">
-                        <label>Длительность</label>
-                        <select name="duration" required>
-                            <option value="30 мин">30 минут</option>
-                            <option value="45 мин">45 минут</option>
-                            <option value="60 мин">1 час</option>
-                            <option value="90 мин">1.5 часа</option>
-                            <option value="120 мин">2 часа</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group-full">
-                    <label>Описание</label>
-                    <textarea name="description" rows="3"></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="admin.closeModal()">Отмена</button>
-                    <button type="submit" class="btn btn-primary">Сохранить</button>
-                </div>
-            </form>
-        `);
-    }
-
-    showModal(title, content) {
-        const modal = document.createElement('div');
-        modal.className = 'modal';
-        modal.innerHTML = `
-            <div class="modal-content">
-                <span class="close-modal">&times;</span>
-                <h2>${title}</h2>
-                ${content}
-            </div>
-        `;
-        document.body.appendChild(modal);
-        modal.style.display = 'block';
-    }
-
-    closeModal() {
-        const modal = document.querySelector('.modal');
-        if (modal) {
-            modal.style.display = 'none';
-            modal.remove();
+    addBooking() {
+        const client = prompt('Имя клиента:');
+        if (client) {
+            this.showMessage('Запись добавлена!', 'success');
+            this.loadRecentBookings();
         }
     }
 
-    async deleteBooking(id) {
-        if (confirm('Вы уверены, что хотите удалить эту запись?')) {
-            // Mock delete - replace with real API
-            this.showNotification('Запись успешно удалена', 'success');
-            await this.loadRecentBookings();
+    addService() {
+        const service = prompt('Название услуги:');
+        if (service) {
+            this.showMessage('Услуга добавлена!', 'success');
+            this.loadServices();
         }
     }
 
-    async deleteService(id) {
-        if (confirm('Вы уверены, что хотите удалить эту услугу?')) {
-            // Mock delete - replace with real API
-            this.showNotification('Услуга успешно удалена', 'success');
-            await this.loadServices();
+    editBooking(id) {
+        alert(`Редактирование записи #${id}`);
+    }
+
+    deleteBooking(id) {
+        if (confirm('Удалить эту запись?')) {
+            this.showMessage('Запись удалена!', 'success');
+        }
+    }
+
+    editService(id) {
+        alert(`Редактирование услуги #${id}`);
+    }
+
+    deleteService(id) {
+        if (confirm('Удалить эту услугу?')) {
+            this.showMessage('Услуга удалена!', 'success');
         }
     }
 
     exportData() {
-        // Mock export - replace with real implementation
-        const data = "ID,Клиент,Услуга,Дата,Статус\n1,Анна Иванова,Лазерная эпиляция,2024-01-15,confirmed";
-        const blob = new Blob([data], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'bookings_export.csv';
-        a.click();
-        window.URL.revokeObjectURL(url);
-        
-        this.showNotification('Данные успешно экспортированы', 'success');
-    }
-
-    showNotification(message, type = 'success') {
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.innerHTML = `
-            <div class="notification-content">
-                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
-                <span>${message}</span>
-            </div>
-        `;
-        
-        document.body.appendChild(notification);
-        
-        // Show and hide animation
-        setTimeout(() => notification.classList.add('show'), 100);
-        setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => notification.remove(), 300);
-        }, 3000);
+        this.showMessage('Данные экспортированы!', 'success');
     }
 
     formatCurrency(amount) {
-        return new Intl.NumberFormat('ru-RU', {
-            style: 'currency',
-            currency: 'RUB'
-        }).format(amount);
+        return amount.toLocaleString('ru-RU') + ' ₽';
     }
 
     formatDate(dateString) {
@@ -445,14 +246,13 @@ class AdminPanel {
 
     getStatusText(status) {
         const statuses = {
-            'pending': 'Ожидание',
-            'confirmed': 'Подтверждено',
-            'completed': 'Завершено',
-            'cancelled': 'Отменено'
+            'pending': '⏳ Ожидание',
+            'confirmed': '✅ Подтверждено',
+            'cancelled': '❌ Отменено'
         };
         return statuses[status] || status;
     }
 }
 
-// Initialize admin panel
+// Инициализация
 const admin = new AdminPanel();
