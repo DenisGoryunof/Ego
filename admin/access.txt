@@ -1,0 +1,6 @@
+Доступ к админ-панели:
+Логин: admin
+Пароль: admin
+
+Для изменения пароля отредактируйте файл admin/js/admin.js
+Найдите строку: if (credentials.username === 'admin' && credentials.password === 'admin')
