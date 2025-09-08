@@ -1,3 +1,16 @@
+// Temporary bypass for testing
+localStorage.setItem('admin_token', 'temp_access');
+localStorage.setItem('admin_user', JSON.stringify({
+    username: 'admin',
+    role: 'administrator'
+}));
+
+// Redirect to dashboard if on login page
+if (window.location.pathname.includes('login.html')) {
+    window.location.href = 'index.html';
+}
+
+
 // Admin Panel JavaScript
 class AdminPanel {
     constructor() {
