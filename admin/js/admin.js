@@ -1,258 +1,375 @@
-// Простая админ-панель без сложной аутентификации
-class AdminPanel {
+// Полная система управления контентом
+class ContentManager {
     constructor() {
+        this.currentPage = 'dashboard';
+        this.unsavedChanges = false;
         this.init();
     }
 
     init() {
-        this.checkSimpleAuth();
+        this.checkAuth();
         this.initEventListeners();
-        this.loadDashboard();
+        this.loadContent();
+        this.initAutoSave();
     }
 
-    checkSimpleAuth() {
-        // Простая проверка - если есть параметр ?admin в URL или в localStorage
-        const urlParams = new URLSearchParams(window.location.search);
-        const isAdmin = urlParams.has('admin') || localStorage.getItem('simple_admin') === 'true';
+    checkAuth() {
+        // Простая аутентификация
+        const isAuthenticated = localStorage.getItem('admin_authenticated') === 'true' ||
+                              new URLSearchParams(window.location.search).has('admin');
         
-        if (!isAdmin && !window.location.pathname.includes('login.html')) {
+        if (!isAuthenticated && !window.location.pathname.includes('login.html')) {
             window.location.href = 'login.html';
             return;
         }
-        
-        if (isAdmin && window.location.pathname.includes('login.html')) {
-            window.location.href = 'index.html';
+
+        if (isAuthenticated) {
+            localStorage.setItem('admin_authenticated', 'true');
         }
     }
 
     initEventListeners() {
-        // Login form
-        const loginForm = document.getElementById('adminLoginForm');
-        if (loginForm) {
-            loginForm.addEventListener('submit', (e) => this.handleSimpleLogin(e));
-        }
-
-        // Logout
-        const logoutBtn = document.querySelector('[data-action="logout"]');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', () => this.logout());
-        }
-
-        // Кнопки действий
+        // Навигация
         document.addEventListener('click', (e) => {
-            if (e.target.closest('[data-action]')) {
-                const action = e.target.closest('[data-action]').dataset.action;
-                this.handleAction(action);
+            if (e.target.closest('.admin-menu a')) {
+                e.preventDefault();
+                const target = e.target.closest('.admin-menu a').getAttribute('href').substring(1);
+                this.switchSection(target);
+            }
+
+            if (e.target.closest('.quick-card')) {
+                const target = e.target.closest('.quick-card').dataset.target;
+                this.switchSection(target);
+            }
+
+            if (e.target.closest('.tab-btn')) {
+                const tab = e.target.closest('.tab-btn').dataset.tab;
+                this.switchTab(tab);
             }
         });
+
+        // Сохранение
+        document.querySelector('[data-action="save-all"]').addEventListener('click', () => this.saveAll());
+        document.querySelector('[data-action="preview"]').addEventListener('click', () => this.previewSite());
+
+        // Изменения в формах
+        document.addEventListener('input', (e) => {
+            if (e.target.matches('input, textarea, select')) {
+                this.unsavedChanges = true;
+                this.updateSaveButton();
+            }
+        });
+
+        // Загрузка изображений
+        document.addEventListener('change', (e) => {
+            if (e.target.matches('input[type="file"]')) {
+                this.handleFileUpload(e.target);
+            }
+        });
+
+        // Выход
+        document.querySelector('[data-action="logout"]').addEventListener('click', () => this.logout());
     }
 
-    handleSimpleLogin(e) {
-        e.preventDefault();
-        
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
+    switchSection(sectionId) {
+        // Скрыть все секции
+        document.querySelectorAll('.admin-section').forEach(section => {
+            section.classList.remove('active');
+        });
 
-        // Простая проверка - любой пароль работает
-        if (username === 'admin') {
-            // Сохраняем простой флаг доступа
-            localStorage.setItem('simple_admin', 'true');
-            
-            // Показываем сообщение об успехе
-            this.showMessage('Вход выполнен успешно!', 'success');
-            
-            // Переходим через секунду
-            setTimeout(() => {
-                window.location.href = 'index.html?admin=true';
-            }, 1000);
-        } else {
-            this.showMessage('Введите "admin" в поле логина', 'error');
+        // Показать выбранную секцию
+        const targetSection = document.getElementById(sectionId);
+        if (targetSection) {
+            targetSection.classList.add('active');
+            this.currentPage = sectionId;
+
+            // Загрузить данные для секции
+            this.loadSectionData(sectionId);
+        }
+
+        // Обновить активное меню
+        document.querySelectorAll('.admin-menu a').forEach(link => {
+            link.classList.remove('active');
+        });
+        document.querySelector(`.admin-menu a[href="#${sectionId}"]`)?.classList.add('active');
+    }
+
+    switchTab(tabId) {
+        // Скрыть все табы
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+
+        // Показать выбранный таб
+        document.querySelector(`.tab-btn[data-tab="${tabId}"]`)?.classList.add('active');
+        document.querySelector(`.tab-content[data-tab="${tabId}"]`)?.classList.add('active');
+    }
+
+    async loadContent() {
+        try {
+            // Загрузка контента с сайта
+            const response = await fetch('../data/content.json');
+            if (response.ok) {
+                this.siteContent = await response.json();
+                this.populateEditors();
+            } else {
+                // Fallback: создаем базовую структуру
+                this.siteContent = this.createDefaultContent();
+                this.populateEditors();
+            }
+        } catch (error) {
+            console.warn('Не удалось загрузить контент, используем демо-данные');
+            this.siteContent = this.createDefaultContent();
+            this.populateEditors();
         }
     }
 
-    logout() {
-        localStorage.removeItem('simple_admin');
-        window.location.href = 'login.html';
+    createDefaultContent() {
+        return {
+            mainPage: {
+                hero: {
+                    title: "Салон красоты EGO в Севастополе",
+                    subtitle: "Подарите себе совершенство с нашими премиальными услугами",
+                    buttonText: "Записаться на процедуру",
+                    backgroundImage: "../assets/images/hero-bg.jpg"
+                },
+                services: [
+                    {
+                        title: "Лазерная эпиляция",
+                        description: "Современное оборудование для безболезненного и эффективного удаления волос",
+                        icon: "✨"
+                    }
+                ]
+            },
+            services: [],
+            gallery: [],
+            reviews: []
+        };
     }
 
-    showMessage(message, type = 'success') {
-        // Создаем простое сообщение
-        const messageDiv = document.createElement('div');
-        messageDiv.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            background: ${type === 'success' ? '#27ae60' : '#e74c3c'};
-            color: white;
-            border-radius: 5px;
-            z-index: 1000;
-            font-weight: bold;
+    populateEditors() {
+        // Заполняем редакторы данными
+        this.populateMainPageEditor();
+        this.populateServicesEditor();
+        this.populateGalleryEditor();
+        this.populateReviewsEditor();
+    }
+
+    populateMainPageEditor() {
+        const content = this.siteContent.mainPage;
+        
+        // Герой-секция
+        document.querySelector('[data-selector=".hero h1"]').value = content.hero.title;
+        document.querySelector('[data-selector=".hero p"]').value = content.hero.subtitle;
+        document.querySelector('[data-selector=".hero .btn"]').value = content.hero.buttonText;
+        
+        // Превью изображения
+        this.updateImagePreview('.hero', content.hero.backgroundImage);
+    }
+
+    populateServicesEditor() {
+        const servicesContainer = document.querySelector('.services-list');
+        servicesContainer.innerHTML = this.siteContent.services.map((service, index) => `
+            <div class="service-editor" data-index="${index}">
+                <h3>Услуга #${index + 1}</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Название услуги</label>
+                        <input type="text" value="${service.title}" 
+                               onchange="admin.updateService(${index}, 'title', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Цена (руб)</label>
+                        <input type="number" value="${service.price || ''}" 
+                               onchange="admin.updateService(${index}, 'price', this.value)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea onchange="admin.updateService(${index}, 'description', this.value)">${service.description || ''}</textarea>
+                </div>
+                <button class="btn btn-danger btn-sm" onclick="admin.deleteService(${index})">
+                    <i class="fas fa-trash"></i> Удалить
+                </button>
+                <hr>
+            </div>
+        `).join('');
+    }
+
+    updateService(index, field, value) {
+        if (this.siteContent.services[index]) {
+            this.siteContent.services[index][field] = value;
+            this.unsavedChanges = true;
+            this.updateSaveButton();
+        }
+    }
+
+    async saveAll() {
+        try {
+            this.showNotification('Сохранение...', 'info');
+            
+            // Сохраняем все изменения
+            await this.saveToLocalStorage();
+            await this.saveToFiles();
+            
+            this.unsavedChanges = false;
+            this.updateSaveButton();
+            this.showNotification('Все изменения сохранены!', 'success');
+            
+        } catch (error) {
+            this.showNotification('Ошибка сохранения: ' + error.message, 'error');
+        }
+    }
+
+    async saveToLocalStorage() {
+        // Сохраняем в localStorage для быстрого доступа
+        localStorage.setItem('site_content', JSON.stringify(this.siteContent));
+    }
+
+    async saveToFiles() {
+        try {
+            // Здесь будет сохранение в файлы через API
+            const response = await fetch('api/update-content.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(this.siteContent)
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка сервера');
+            }
+        } catch (error) {
+            console.warn('Не удалось сохранить в файлы, используем localStorage');
+        }
+    }
+
+    async handleFileUpload(input) {
+        const files = input.files;
+        if (!files.length) return;
+
+        for (const file of files) {
+            if (file.type.startsWith('image/')) {
+                await this.uploadImage(file);
+            }
+        }
+    }
+
+    async uploadImage(file) {
+        try {
+            const formData = new FormData();
+            formData.append('image', file);
+
+            const response = await fetch('api/upload-image.php', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                this.showNotification('Изображение загружено!', 'success');
+                return result.path;
+            } else {
+                throw new Error('Ошибка загрузки');
+            }
+        } catch (error) {
+            this.showNotification('Ошибка загрузки изображения', 'error');
+            // Fallback: создаем object URL
+            return URL.createObjectURL(file);
+        }
+    }
+
+    updateImagePreview(selector, imageUrl) {
+        const preview = document.querySelector(`.image-preview[data-target="${selector}"]`);
+        if (preview && imageUrl) {
+            preview.innerHTML = `<img src="${imageUrl}" alt="Preview">`;
+        }
+    }
+
+    previewSite() {
+        // Открываем сайт в новом окне
+        window.open('../index.html', '_blank');
+    }
+
+    showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas ${this.getNotificationIcon(type)}"></i>
+                <span>${message}</span>
+            </div>
         `;
-        messageDiv.textContent = message;
         
-        document.body.appendChild(messageDiv);
+        document.body.appendChild(notification);
         
-        // Удаляем через 3 секунды
+        setTimeout(() => notification.classList.add('show'), 100);
         setTimeout(() => {
-            document.body.removeChild(messageDiv);
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
         }, 3000);
     }
 
-    async loadDashboard() {
-        if (!window.location.pathname.includes('index.html')) return;
-
-        // Загружаем mock данные
-        this.loadStatistics();
-        this.loadRecentBookings();
-        this.loadServices();
-    }
-
-    loadStatistics() {
-        // Mock данные
-        const stats = {
-            totalBookings: 1247,
-            activeClients: 584,
-            monthlyRevenue: 284500,
-            pendingApprovals: 12
+    getNotificationIcon(type) {
+        const icons = {
+            'success': 'fa-check-circle',
+            'error': 'fa-exclamation-circle',
+            'info': 'fa-info-circle'
         };
-
-        // Обновляем статистику
-        document.getElementById('total-bookings').textContent = stats.totalBookings;
-        document.getElementById('active-clients').textContent = stats.activeClients;
-        document.getElementById('monthly-revenue').textContent = this.formatCurrency(stats.monthlyRevenue);
-        document.getElementById('pending-approvals').textContent = stats.pendingApprovals;
+        return icons[type] || 'fa-info-circle';
     }
 
-    loadRecentBookings() {
-        const bookings = [
-            { id: 1, client: 'Анна Иванова', service: 'Лазерная эпиляция', date: '2024-01-15 14:00', status: 'confirmed' },
-            { id: 2, client: 'Мария Петрова', service: 'Моментальный загар', date: '2024-01-15 15:30', status: 'pending' },
-            { id: 3, client: 'Елена Сидорова', service: 'Маникюр', date: '2024-01-15 16:00', status: 'confirmed' }
-        ];
-
-        this.renderBookingsTable(bookings);
-    }
-
-    renderBookingsTable(bookings) {
-        const tbody = document.querySelector('#bookings-table tbody');
-        if (!tbody) return;
-
-        tbody.innerHTML = bookings.map(booking => `
-            <tr>
-                <td>${booking.id}</td>
-                <td>${booking.client}</td>
-                <td>${booking.service}</td>
-                <td>${this.formatDate(booking.date)}</td>
-                <td>${this.getStatusText(booking.status)}</td>
-                <td>
-                    <button class="btn btn-sm" onclick="admin.editBooking(${booking.id})">✏️</button>
-                    <button class="btn btn-sm btn-danger" onclick="admin.deleteBooking(${booking.id})">🗑️</button>
-                </td>
-            </tr>
-        `).join('');
-    }
-
-    loadServices() {
-        const services = [
-            { id: 1, name: 'Лазерная эпиляция', price: 2500, duration: '60 мин', category: 'Эпиляция' },
-            { id: 2, name: 'Моментальный загар', price: 2000, duration: '30 мин', category: 'Загар' },
-            { id: 3, name: 'Маникюр', price: 1500, duration: '45 мин', category: 'Ногти' }
-        ];
-
-        this.renderServicesTable(services);
-    }
-
-    renderServicesTable(services) {
-        const tbody = document.querySelector('#services-table tbody');
-        if (!tbody) return;
-
-        tbody.innerHTML = services.map(service => `
-            <tr>
-                <td>${service.id}</td>
-                <td>${service.name}</td>
-                <td>${service.category}</td>
-                <td>${this.formatCurrency(service.price)}</td>
-                <td>${service.duration}</td>
-                <td>
-                    <button class="btn btn-sm" onclick="admin.editService(${service.id})">✏️</button>
-                    <button class="btn btn-sm btn-danger" onclick="admin.deleteService(${service.id})">🗑️</button>
-                </td>
-            </tr>
-        `).join('');
-    }
-
-    handleAction(action) {
-        switch (action) {
-            case 'add-booking':
-                this.addBooking();
-                break;
-            case 'add-service':
-                this.addService();
-                break;
-            case 'export-data':
-                this.exportData();
-                break;
+    updateSaveButton() {
+        const saveBtn = document.querySelector('[data-action="save-all"]');
+        if (this.unsavedChanges) {
+            saveBtn.innerHTML = '<i class="fas fa-save"></i> Сохранить изменения*';
+            saveBtn.style.background = 'linear-gradient(135deg, #e67e22, #d35400)';
+        } else {
+            saveBtn.innerHTML = '<i class="fas fa-save"></i> Сохранить всё';
+            saveBtn.style.background = '';
         }
     }
 
-    addBooking() {
-        const client = prompt('Имя клиента:');
-        if (client) {
-            this.showMessage('Запись добавлена!', 'success');
-            this.loadRecentBookings();
-        }
+    initAutoSave() {
+        // Автосохранение каждые 2 минуты
+        setInterval(() => {
+            if (this.unsavedChanges) {
+                this.saveToLocalStorage();
+            }
+        }, 120000);
     }
 
-    addService() {
-        const service = prompt('Название услуги:');
-        if (service) {
-            this.showMessage('Услуга добавлена!', 'success');
-            this.loadServices();
-        }
-    }
-
-    editBooking(id) {
-        alert(`Редактирование записи #${id}`);
-    }
-
-    deleteBooking(id) {
-        if (confirm('Удалить эту запись?')) {
-            this.showMessage('Запись удалена!', 'success');
-        }
-    }
-
-    editService(id) {
-        alert(`Редактирование услуги #${id}`);
-    }
-
-    deleteService(id) {
-        if (confirm('Удалить эту услугу?')) {
-            this.showMessage('Услуга удалена!', 'success');
-        }
-    }
-
-    exportData() {
-        this.showMessage('Данные экспортированы!', 'success');
-    }
-
-    formatCurrency(amount) {
-        return amount.toLocaleString('ru-RU') + ' ₽';
-    }
-
-    formatDate(dateString) {
-        return new Date(dateString).toLocaleString('ru-RU');
-    }
-
-    getStatusText(status) {
-        const statuses = {
-            'pending': '⏳ Ожидание',
-            'confirmed': '✅ Подтверждено',
-            'cancelled': '❌ Отменено'
-        };
-        return statuses[status] || status;
+    logout() {
+        localStorage.removeItem('admin_authenticated');
+        localStorage.removeItem('site_content');
+        window.location.href = 'login.html';
     }
 }
 
 // Инициализация
-const admin = new AdminPanel();
+const admin = new ContentManager();
+
+// Глобальные функции для вызова из HTML
+window.addService = function() {
+    admin.siteContent.services.push({
+        title: 'Новая услуга',
+        description: 'Описание услуги',
+        price: 0
+    });
+    admin.populateServicesEditor();
+    admin.unsavedChanges = true;
+    admin.updateSaveButton();
+};
+
+window.deleteService = function(index) {
+    if (confirm('Удалить эту услугу?')) {
+        admin.siteContent.services.splice(index, 1);
+        admin.populateServicesEditor();
+        admin.unsavedChanges = true;
+        admin.updateSaveButton();
+    }
+};

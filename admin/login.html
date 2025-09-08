@@ -1,21 +1,40 @@
-<!-- Замените форму на эту простую версию -->
-<form class="login-form" id="adminLoginForm">
-    <div class="form-group">
-        <label for="username">Логин</label>
-        <input type="text" id="username" name="username" required value="admin">
-    </div>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход в панель управления - EGO</title>
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-login">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>✨ Панель управления EGO</h1>
+                <p>Вход в систему редактирования контента</p>
+            </div>
 
-    <div class="form-group">
-        <label for="password">Пароль (любой)</label>
-        <input type="password" id="password" name="password" placeholder="Введите любой пароль">
-    </div>
+            <form class="login-form" onsubmit="localStorage.setItem('admin_authenticated', 'true'); return true;">
+                <div class="form-group">
+                    <label>Логин</label>
+                    <input type="text" value="admin" readonly>
+                </div>
 
-    <button type="submit" class="btn btn-primary btn-block">
-        <i class="fas fa-sign-in-alt"></i>
-        Войти
-    </button>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" placeholder="Введите любой пароль">
+                </div>
 
-    <div class="login-help">
-        <p><strong>Просто введите "admin" и любой пароль</strong></p>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-sign-in-alt"></i> Войти в панель управления
+                </button>
+            </form>
+
+            <div class="login-help">
+                <p><strong>Просто нажмите "Войти" для доступа к панели</strong></p>
+                <p>Любой пароль будет принят</p>
+            </div>
+        </div>
     </div>
-</form>
+</body>
+</html>

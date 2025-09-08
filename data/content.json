@@ -1,0 +1,13 @@
+{
+    "mainPage": {
+        "hero": {
+            "title": "Салон красоты EGO в Севастополе",
+            "subtitle": "Подарите себе совершенство с нашими премиальными услугами",
+            "buttonText": "Записаться на процедуру",
+            "backgroundImage": "../assets/images/hero-bg.jpg"
+        }
+    },
+    "services": [],
+    "gallery": [],
+    "reviews": []
+}
