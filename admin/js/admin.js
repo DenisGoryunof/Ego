@@ -64,41 +64,65 @@ class AdminPanel {
     }
 
     async handleLogin(e) {
-        e.preventDefault();
-        
-        const formData = {
-            username: document.getElementById('username').value,
-            password: document.getElementById('password').value
-        };
+		e.preventDefault();
+		
+		const form = e.target;
+		const formData = {
+			username: form.username.value,
+			password: form.password.value
+		};
 
-        try {
-            // Simulate API call
-            await this.mockLogin(formData);
-            
-            localStorage.setItem('admin_token', 'mock_jwt_token');
-            localStorage.setItem('admin_user', JSON.stringify({
-                username: formData.username,
-                role: 'admin'
-            }));
-            
-            window.location.href = 'index.html';
-        } catch (error) {
-            this.showNotification('Ошибка входа: неверные данные', 'error');
-        }
-    }
+		// Валидация
+		if (!formData.username || !formData.password) {
+			this.showNotification('Заполните все поля', 'error');
+			return;
+		}
+
+		try {
+			const result = await this.mockLogin(formData);
+			
+			if (result.success) {
+				localStorage.setItem('admin_token', 'mock_jwt_token');
+				localStorage.setItem('admin_user', JSON.stringify(result.user));
+				
+				this.showNotification('Успешный вход!', 'success');
+				
+				// Переход после задержки для показа уведомления
+				setTimeout(() => {
+					window.location.href = 'index.html';
+				}, 1000);
+			}
+		} catch (error) {
+			this.showNotification(error.message || 'Ошибка входа: неверные данные', 'error');
+			
+			// Анимация ошибки
+			form.classList.add('shake');
+			setTimeout(() => form.classList.remove('shake'), 500);
+		}
+	}
 
     async mockLogin(credentials) {
-        // Mock authentication - replace with real API call
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                if (credentials.username === 'admin' && credentials.password === 'admin123') {
-                    resolve({ success: true });
-                } else {
-                    reject({ success: false });
-                }
-            }, 1000);
-        });
-    }
+		// Mock authentication - replace with real API call
+		return new Promise((resolve, reject) => {
+			setTimeout(() => {
+				// Правильные учетные данные для входа
+				if (credentials.username === 'admin' && credentials.password === 'admin') {
+					resolve({ 
+						success: true,
+						user: {
+							username: credentials.username,
+							role: 'admin'
+						}
+					});
+				} else {
+					reject({ 
+						success: false,
+						message: 'Неверные учетные данные'
+					});
+				}
+			}, 1000);
+		});
+	}
 
     logout() {
         localStorage.removeItem('admin_token');
