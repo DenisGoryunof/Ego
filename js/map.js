@@ -1,93 +1,66 @@
-// map.js
-// Инициализация Яндекс Карты
+// Инициализация карты
 document.addEventListener('DOMContentLoaded', function() {
-    if (typeof ymaps !== 'undefined') {
-        initMap();
-    } else {
-        console.warn('Yandex Maps API не загружена');
-    }
+    // Создаем элемент script для загрузки API Яндекс.Карт
+    const script = document.createElement('script');
+    script.src = 'https://api-maps.yandex.ru/2.1/?apikey=313800e8-70de-41cb-85db-ed97511ea52c&lang=ru_RU';
+    script.onload = function() {
+        // Инициализация карты после загрузки API
+        ymaps.ready(initMap);
+    };
+    document.head.appendChild(script);
 });
 
 function initMap() {
-    ymaps.ready(function() {
-        try {
-            const map = new ymaps.Map('map', {
-                center: [44.604202, 33.522522], // Координаты ул. 6-я Бастионная, 40
-                zoom: 17,
-                controls: ['zoomControl', 'fullscreenControl']
-            });
-
-            // Метка салона
-            const salonPlacemark = new ymaps.Placemark([44.604202, 33.522522], {
-                balloonContent: `
-                    <strong>Салон красоты Ego</strong><br>
-                    ул. 6-я Бастионная, 40, 2й этаж<br>
-                    📞 +7 (978) 000-00-00<br>
-                    🕐 Пн-Пт: 9:00-21:00, Сб-Вс: 10:00-20:00
-                `
-            }, {
-                preset: 'islands#yellowIcon',
-                iconColor: '#d4af37'
-            });
-
-            map.geoObjects.add(salonPlacemark);
-            
-            // Открываем балун при загрузке
-            setTimeout(() => {
-                salonPlacemark.balloon.open();
-            }, 1000);
-
-        } catch (error) {
-            console.error('Ошибка инициализации карты:', error);
-            showNotification('Не удалось загрузить карту', 'error');
-        }
+    // Координаты салона красоты Ego (Севастополь, ул. 6-я Бастионная, 40)
+    var myMap = new ymaps.Map('map', {
+        center: [44.604101, 33.520722],
+        zoom: 16,
+        controls: ['zoomControl', 'fullscreenControl']
     });
+
+    // Добавляем метку
+    var myPlacemark = new ymaps.Placemark([44.604101, 33.520722], {
+        hintContent: 'Салон красоты Ego',
+        balloonContent: `
+            <div style="padding: 10px;">
+                <h3 style="margin: 0 0 10px 0; color: #6a11cb;">Салон красоты Ego</h3>
+                <p style="margin: 5px 0;">ул. 6-я Бастионная, 40, 2й этаж</p>
+                <p style="margin: 5px 0;">вход со двора</p>
+                <p style="margin: 5px 0;"><strong>Телефон:</strong> +7 (978) 859-03-84</p>
+                <a href="tel:+79788590384" style="color: #2575fc; text-decoration: none;">Позвонить</a>
+            </div>
+        `
+    }, {
+        // Опции метки
+        iconLayout: 'default#image',
+        iconImageHref: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiMyNTc1RkMiIGZpbGwtb3BhY2l0eT0iMC44Ii8+CjxjaXJjbGUgY3g9IjIwIiBjeT0iMjAiIHI9IjgiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPg==',
+        iconImageSize: [40, 40],
+        iconImageOffset: [-20, -40],
+        balloonCloseButton: true,
+        balloonAutoPan: true
+    });
+
+    myMap.geoObjects.add(myPlacemark);
+    
+    // Открываем балун при загрузке
+    myPlacemark.balloon.open();
 }
 
-// Построение маршрута
 function buildRoute() {
+    // Запрос геолокации пользователя
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
-            const userLat = position.coords.latitude;
-            const userLon = position.coords.longitude;
+            var userLat = position.coords.latitude;
+            var userLon = position.coords.longitude;
             
-            const yandexMapsUrl = `https://yandex.ru/maps/?rtext=${userLat},${userLon}~44.604202,33.522522&rtt=auto`;
-            window.open(yandexMapsUrl, '_blank');
+            // Открываем маршрут от пользователя до салона в Яндекс.Навигаторе
+            window.open(`https://yandex.ru/maps/?rtext=${userLat},${userLon}~44.604101,33.520722&rtt=auto`);
         }, function(error) {
-            console.warn('Геолокация недоступна:', error);
-            // Если геолокация недоступна, открываем карту с поиском маршрута
-            const yandexMapsUrl = 'https://yandex.ru/maps/org/salon_krasoty_ego/1123456789/?ll=33.522522%2C44.604202&z=17&mode=routes';
-            window.open(yandexMapsUrl, '_blank');
-        }, {
-            enableHighAccuracy: true,
-            timeout: 5000,
-            maximumAge: 300000
+            // Если пользователь отказался от геолокации, открываем карту без маршрута
+            window.open('https://yandex.ru/maps/?ll=33.520722,44.604101&z=16');
         });
     } else {
-        const yandexMapsUrl = 'https://yandex.ru/maps/org/salon_krasoty_ego/1123456789/?ll=33.522522%2C44.604202&z=17&mode=routes';
-        window.open(yandexMapsUrl, '_blank');
+        // Если геолокация не поддерживается
+        window.open('https://yandex.ru/maps/?ll=33.520722,44.604101&z=16');
     }
 }
-
-// Резервная функция для карты
-function initMapFallback() {
-    const mapContainer = document.getElementById('map');
-    if (mapContainer) {
-        mapContainer.innerHTML = `
-            <div style="padding: 20px; text-align: center; background: #f8f9fa; border-radius: 15px;">
-                <h3>Карта временно недоступна</h3>
-                <p>Адрес: г. Севастополь, ул. 6-я Бастионная, дом 40, 2й этаж</p>
-                <button onclick="buildRoute()" class="btn" style="margin: 10px;">
-                    <i class="fas fa-route"></i> Построить маршрут
-                </button>
-            </div>
-        `;
-    }
-}
-
-// Запасной вариант если Яндекс Карты не загрузились
-setTimeout(() => {
-    if (typeof ymaps === 'undefined') {
-        initMapFallback();
-    }
-}, 3000);
