@@ -161,14 +161,25 @@
                 </div>
 
                 <div class="map-container">
-                    <div id="map"></div>
-                    <div class="map-actions">
-                        <button onclick="buildRoute()" class="btn route-btn">
-                            <i class="fas fa-route"></i>
-                            Построить маршрут
-                        </button>
-                    </div>
-                </div>
+					<div id="map">
+						<div class="map-loading" style="height: 450px; display: flex; align-items: center; justify-content: center;">
+							<div style="text-align: center; color: #6a11cb;">
+								<i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i>
+								<p>Загрузка карты...</p>
+							</div>
+						</div>
+					</div>
+					<div class="map-actions">
+						<button onclick="buildRoute()" class="btn route-btn">
+							<i class="fas fa-route"></i>
+							Построить маршрут
+						</button>
+						<button onclick="openFullScreenMap()" class="btn fullscreen-btn">
+							<i class="fas fa-expand"></i>
+							Полный экран
+						</button>
+					</div>
+				</div>
             </div>
         </div>
     </section>
@@ -201,185 +212,303 @@
         </div>
     </section>
 
-   <footer class="modern-footer">
-		<div class="footer-wave">
-			<svg viewBox="0 0 1200 120" preserveAspectRatio="none">
-				<path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" class="shape-fill"></path>
-				<path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" class="shape-fill"></path>
-				<path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" class="shape-fill"></path>
-			</svg>
-		</div>
-		
-		<div class="container">
-			<div class="footer-content">
-				<!-- Основная информация -->
-				<div class="footer-main">
-					<div class="footer-brand">
-						<div class="footer-logo">
-							<span class="logo-icon">✨</span>
-							<span class="logo-text">Ego</span>
-						</div>
-						<p class="footer-description">
-							Ваша красота - наша профессия. Премиальный салон красоты в самом сердце Севастополя.
-						</p>
-						<div class="footer-achievements">
-							<div class="achievement">
-								<span class="achievement-number">10+</span>
-								<span class="achievement-text">лет работы</span>
-							</div>
-							<div class="achievement">
-								<span class="achievement-number">5000+</span>
-								<span class="achievement-text">довольных клиентов</span>
-							</div>
-						</div>
-					</div>
+<footer class="modern-footer">
+    <div class="footer-wave">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" class="shape-fill"></path>
+            <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" class="shape-fill"></path>
+            <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" class="shape-fill"></path>
+        </svg>
+    </div>
+    
+    <div class="container">
+        <div class="footer-content">
+            <!-- Основная информация -->
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <span class="logo-icon">✨</span>
+                        <span class="logo-text">Ego</span>
+                    </div>
+                    <p class="footer-description">
+                        Ваша красота - наша профессия. Премиальный салон красоты в самом сердце Севастополя.
+                    </p>
+                    <div class="footer-achievements">
+                        <div class="achievement">
+                            <span class="achievement-number">5+</span>
+                            <span class="achievement-text">лет работы</span>
+                        </div>
+                        <div class="achievement">
+                            <span class="achievement-number">1000+</span>
+                            <span class="achievement-text">довольных клиентов</span>
+                        </div>
+                    </div>
+                </div>
 
-					<!-- Навигация -->
-					<div class="footer-nav">
-						<div class="footer-column">
-							<h4>Услуги</h4>
-							<ul>
-								<li><a href="services.html#epilation">Лазерная эпиляция</a></li>
-								<li><a href="services.html#tan">Моментальный загар</a></li>
-								<li><a href="services.html#nails">Маникюр</a></li>
-								<li><a href="services.html#nails">Педикюр</a></li>
-								<li><a href="services.html">Все услуги</a></li>
-							</ul>
-						</div>
-						
-						<div class="footer-column">
-							<h4>О салоне</h4>
-							<ul>
-								<li><a href="about.html">О нас</a></li>
-								<li><a href="gallery.html">Галерея</a></li>
-								<li><a href="reviews.html">Отзывы</a></li>
-								<li><a href="#">Сертификаты</a></li>
-								<li><a href="#">Вакансии</a></li>
-							</ul>
-						</div>
-						
-						<div class="footer-column">
-							<h4>Поддержка</h4>
-							<ul>
-								<li><a href="contact.html">Контакты</a></li>
-								<li><a href="#">FAQ</a></li>
-								<li><a href="#">Политика конфиденциальности</a></li>
-								<li><a href="#">Договор оферты</a></li>
-								<li><a href="#">Карта сайта</a></li>
-							</ul>
-						</div>
-					</div>
+                <!-- Навигация -->
+                <div class="footer-nav">
+                    <div class="footer-column">
+                        <h4>Услуги</h4>
+                        <ul>
+                            <li><a href="services.html#epilation">Лазерная эпиляция</a></li>
+                            <li><a href="services.html#tan">Искусственный загар</a></li>
+                            <li><a href="services.html#nails">Маникюр</a></li>
+                            <li><a href="services.html#nails">Педикюр</a></li>
+                            <li><a href="services.html">Все услуги</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h4>О салоне</h4>
+                        <ul>
+                            <li><a href="about.html">О нас</a></li>
+                            <li><a href="gallery.html">Галерея</a></li>
+                            <li><a href="reviews.html">Отзывы</a></li>
+                            <li><a href="#">Сертификаты</a></li>
+                            <li><a href="#">Вакансии</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h4>Поддержка</h4>
+                        <ul>
+                            <li><a href="contact.html">Контакты</a></li>
+                            <li><a href="#">FAQ</a></li>
+                            <li><a href="#">Политика конфиденциальности</a></li>
+                            <li><a href="#">Договор оферты</a></li>
+                            <li><a href="#">Карта сайта</a></li>
+                        </ul>
+                    </div>
+                </div>
 
-					<!-- Контакты -->
-					<div class="footer-contacts">
-						<h4>Контакты</h4>
-						<div class="contact-item">
-							<i class="fas fa-map-marker-alt"></i>
-							<span>г. Севастополь, ул. 6-я Бастионная, 40, 2й этаж</span>
-						</div>
-						<div class="contact-item">
-							<i class="fas fa-phone"></i>
-							<a href="tel:+79788590384">+7 (978) 859-03-84</a>
-						</div>
-						<div class="contact-item">
-							<i class="fas fa-envelope"></i>
-							<a href="mailto:info@ego-sevastopol.ru">info@ego-sevastopol.ru</a>
-						</div>
-						<div class="contact-item">
-							<i class="fas fa-clock"></i>
-							<span>Пн-Сб: 9:30-20:00<br>Вс: выходной</span>
-						</div>
-					</div>
-				</div>
+               <!-- Контакты -->
+                <div class="footer-contacts">
+                    <h4>Контакты</h4>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>г. Севастополь, ул. 6-я Бастионная, 40, 2й этаж</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <a href="tel:+79788590384">+7 (978) 859-03-84</a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <a href="mailto:info@ego-sevastopol.ru">info@ego-sevastopol.ru</a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Пн-Пт: 9:00-21:00<br>Сб-Вс: 10:00-20:00</span>
+                    </div>
+                </div>
+            </div>
 
-				<!-- Социальные сети и подписка -->
-				<div class="footer-social-section">
-					<div class="footer-social">
-						<h4>Мы в соцсетях</h4>
-						<div class="social-links">
-							<!-- <a href="#" class="social-link instagram">
-								<i class="fab fa-instagram"></i>
-								<span>Instagram</span>
-							</a> -->
-							<a href="#" class="social-link vk">
-								<i class="fab fa-vk"></i>
-								<span>VKontakte</span>
-							</a>
-							<a href="https://wa.me/79780000000" class="social-link whatsapp">
-								<i class="fab fa-whatsapp"></i>
-								<span>WhatsApp</span>
-							</a>
-							<a href="https://t.me/egosevastopol" class="social-link telegram">
-								<i class="fab fa-telegram"></i>
-								<span>Telegram</span>
-							</a>
-						   <!--  <a href="#" class="social-link youtube">
-								<i class="fab fa-youtube"></i>
-								<span>YouTube</span>
-							</a> -->
-						</div>
-					</div>
+            <!-- Социальные сети и подписка -->
+            <div class="footer-social-section">
+                <div class="footer-social">
+                    <h4>Мы в соцсетях</h4>
+                    <div class="social-links">
+                        <a href="#" class="social-link instagram">
+                            <i class="fab fa-instagram"></i>
+                            <span>Instagram</span>
+                        </a>
+                        <a href="#" class="social-link vk">
+                            <i class="fab fa-vk"></i>
+                            <span>VKontakte</span>
+                        </a>
+                        <a href="https://wa.me/79780000000" class="social-link whatsapp">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>WhatsApp</span>
+                        </a>
+                        <a href="https://t.me/egosevastopol" class="social-link telegram">
+                            <i class="fab fa-telegram"></i>
+                            <span>Telegram</span>
+                        </a>
+                        <a href="#" class="social-link youtube">
+                            <i class="fab fa-youtube"></i>
+                            <span>YouTube</span>
+                        </a>
+                    </div>
+                </div>
 
-					<div class="footer-newsletter">
-						<h4>Подпишитесь на новости</h4>
-						<p>Получайте эксклюзивные предложения и новости салона</p>
-						<form class="newsletter-form">
-							<input type="email" placeholder="Ваш email" required>
-							<button type="submit">
-								<i class="fas fa-paper-plane"></i>
-							</button>
-						</form>
-					</div>
-				</div>
-			</div>
+                <div class="footer-newsletter">
+                    <h4>Подпишитесь на новости</h4>
+                    <p>Получайте эксклюзивные предложения и новости салона</p>
+                    <form class="newsletter-form">
+                        <input type="email" placeholder="Ваш email" required>
+                        <button type="submit">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
 
-			<!-- Нижняя часть футера -->
-			<div class="footer-bottom">
-				<div class="footer-bottom-content">
-					<div class="copyright">
-						<p>&copy; 2024 Салон красоты Ego. Все права защищены.</p>
-					</div>
-					
-					<div class="footer-payments">
-						<span>Принимаем к оплате:</span>
-						<div class="payment-methods">
-							<i class="fab fa-cc-visa" title="Visa"></i>
-							<i class="fab fa-cc-mastercard" title="Mastercard"></i>
-							<i class="fab fa-cc-mir" title="Mir"></i>
-							<i class="fas fa-money-bill-wave" title="Наличные"></i>
-						</div>
-					</div>
-					
-					<div class="footer-badges">
-						<div class="badge">
-							<i class="fas fa-shield-alt"></i>
-							<span>SSL защита</span>
-						</div>
-						<div class="badge">
-							<i class="fas fa-certificate"></i>
-							<span>Лицензировано</span>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+        <!-- Нижняя часть футера -->
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <div class="copyright">
+                    <p>&copy; 2024 Салон красоты Ego. Все права защищены.</p>
+                </div>
+                
+                <div class="footer-payments">
+                    <span>Принимаем к оплате:</span>
+                    <div class="payment-methods">
+                        <i class="fab fa-cc-visa" title="Visa"></i>
+                        <i class="fab fa-cc-mastercard" title="Mastercard"></i>
+                        <i class="fab fa-cc-mir" title="Mir"></i>
+                        <i class="fas fa-money-bill-wave" title="Наличные"></i>
+                    </div>
+                </div>
+                
+                <div class="footer-badges">
+                    <div class="badge">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>SSL защита</span>
+                    </div>
+                    <div class="badge">
+                        <i class="fas fa-certificate"></i>
+                        <span>Лицензировано</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-			<!-- Плавающие кнопки -->
-		<div class="floating-button">
-			<a href="tel:+79788590384" class="call-button">
-				<i class="fas fa-phone"></i>
-			</a>
-			<a href="https://wa.me/79788590384" class="whatsapp-button" target="_blank">
-				<i class="fab fa-whatsapp"></i>
-			</a>
-			<a href="https://t.me/79788590384" class="telegram-button" target="_blank">
-				<i class="fab fa-telegram"></i>
-			</a>
-		</div>
-	</footer>
+ <!-- Плавающие кнопки -->
+<div class="floating-button">
+    <a href="tel:+79780000000" class="call-button">
+        <i class="fas fa-phone"></i>
+    </a>
+    <a href="https://wa.me/79780000000" class="whatsapp-button" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+    <a href="https://t.me/egosevastopol" class="telegram-button" target="_blank">
+        <i class="fab fa-telegram"></i>
+    </a>
+</div>
+</footer>
 
     <script src="js/script.js"></script>
     <script src="js/map.js"></script>
     <script src="js/form.js"></script>
+	<script>
+    // Инициализация карты
+    document.addEventListener('DOMContentLoaded', function() {
+        // Создаем элемент script для загрузки API Яндекс.Карт
+        const script = document.createElement('script');
+        script.src = 'https://api-maps.yandex.ru/2.1/?apikey=313800e8-70de-41cb-85db-ed97511ea52c&lang=ru_RU';
+        script.onload = function() {
+            // Инициализация карты после загрузки API
+            ymaps.ready(initMap);
+        };
+        document.head.appendChild(script);
+    });
+
+    function initMap() {
+        // Правильные координаты салона красоты Ego (Севастополь, ул. 6-я Бастионная, 40)
+        var myMap = new ymaps.Map('map', {
+            center: [44.604007, 33.513197],
+            zoom: 17,
+            controls: ['zoomControl', 'fullscreenControl']
+        });
+
+        // Создаем кастомную иконку в стиле сайта
+        var myPlacemark = new ymaps.Placemark([44.604007, 33.513197], {
+            hintContent: 'Салон красоты Ego',
+            balloonContent: `
+                <div style="padding: 15px; max-width: 250px;">
+                    <h3 style="margin: 0 0 12px 0; color: #6a11cb; font-family: 'Playfair Display', serif;">Салон красоты Ego</h3>
+                    <p style="margin: 8px 0; color: #333;">
+                        <i class="fas fa-map-marker-alt" style="color: #2575fc; width: 16px;"></i>
+                        ул. 6-я Бастионная, 40, 2й этаж
+                    </p>
+                    <p style="margin: 8px 0; color: #666; font-size: 14px;">вход со двора</p>
+                    <p style="margin: 8px 0; color: #333;">
+                        <i class="fas fa-phone" style="color: #2575fc; width: 16px;"></i>
+                        <a href="tel:+79788590384" style="color: #2575fc; text-decoration: none;">+7 (978) 859-03-84</a>
+                    </p>
+                    <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee;">
+                        <a href="#booking" style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); 
+                        color: white; padding: 8px 16px; border-radius: 25px; text-decoration: none; 
+                        display: inline-block; font-size: 14px;">Записаться</a>
+                    </div>
+                </div>
+            `
+        }, {
+            // Опции метки в стиле сайта
+            iconLayout: 'default#image',
+            iconImageHref: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjUiIGZpbGw9InVybCgjcGFpbnQwX2FuZ3VsYXIpIi8+CjxjaXJjbGUgY3g9IjI1IiBjeT0iMjUiIHI9IjEwIiBmaWxsPSJ3aGl0ZSIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJwYWludDBfYW5ndWxhciIgeDE9IjI1IiB5MT0iMCIgeDI9IjI1IiB5Mj0iNTAiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHN0b3Agc3RvcC1jb2xvcj0iIzZhMTFDQiIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyNTc1RkMiLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4=',
+            iconImageSize: [50, 50],
+            iconImageOffset: [-25, -50],
+            balloonCloseButton: true,
+            balloonAutoPan: true,
+            balloonPanelMaxMapArea: 0
+        });
+
+        myMap.geoObjects.add(myPlacemark);
+        
+        // Открываем балун при загрузке
+        myPlacemark.balloon.open();
+        
+        // Добавляем кастомные элементы управления
+        myMap.controls.add('routeButtonControl', {
+            position: {top: 10, right: 10}
+        });
+
+        // Скрываем индикатор загрузки
+        const loadingElement = document.querySelector('.map-loading');
+        if (loadingElement) {
+            loadingElement.style.display = 'none';
+        }
+    }
+
+    function buildRoute() {
+        // Запрос геолокации пользователя
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var userLat = position.coords.latitude;
+                var userLon = position.coords.longitude;
+                
+                // Открываем маршрут от пользователя до салона в Яндекс.Навигаторе
+                window.open(`https://yandex.ru/maps/?rtext=${userLat},${userLon}~44.604007,33.513197&rtt=auto`);
+            }, function(error) {
+                // Если пользователь отказался от геолокации, открываем карту без маршрута
+                window.open('https://yandex.ru/maps/?ll=33.513197,44.604007&z=17');
+            });
+        } else {
+            // Если геолокация не поддерживается
+            window.open('https://yandex.ru/maps/?ll=33.513197,44.604007&z=17');
+        }
+    }
+
+    // Функция для открытия карты в полный экран
+    function openFullScreenMap() {
+        const mapContainer = document.getElementById('map');
+        if (mapContainer.requestFullscreen) {
+            mapContainer.requestFullscreen();
+        } else if (mapContainer.webkitRequestFullscreen) {
+            mapContainer.webkitRequestFullscreen();
+        } else if (mapContainer.msRequestFullscreen) {
+            mapContainer.msRequestFullscreen();
+        }
+    }
+
+    // Обработчик выхода из полноэкранного режима
+    document.addEventListener('fullscreenchange', exitHandler);
+    document.addEventListener('webkitfullscreenchange', exitHandler);
+    document.addEventListener('mozfullscreenchange', exitHandler);
+    document.addEventListener('MSFullscreenChange', exitHandler);
+
+    function exitHandler() {
+        if (!document.fullscreenElement && 
+            !document.webkitFullscreenElement && 
+            !document.mozFullScreenElement &&
+            !document.msFullscreenElement) {
+            // Выход из полноэкранного режима
+            console.log('Выход из полноэкранного режима');
+        }
+    }
+</script>
 </body>
 </html>
