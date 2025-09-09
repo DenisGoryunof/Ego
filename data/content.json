@@ -1,13 +1,31 @@
 {
-    "mainPage": {
-        "hero": {
-            "title": "Салон красоты EGO в Севастополе",
-            "subtitle": "Подарите себе совершенство с нашими премиальными услугами",
-            "buttonText": "Записаться на процедуру",
-            "backgroundImage": "../assets/images/hero-bg.jpg"
-        }
-    },
-    "services": [],
-    "gallery": [],
-    "reviews": []
+"navigation": [
+{ "text": "Главная", "href": "/index.html" },
+{ "text": "Услуги", "href": "/services.html" },
+{ "text": "Галерея", "href": "/gallery.html" },
+{ "text": "Отзывы", "href": "/reviews.html" },
+{ "text": "Контакты", "href": "/contact.html" },
+{ "text": "О нас", "href": "/about.html" }
+],
+"contentBlocks": [
+{ "id": "hero", "type": "hero", "content": "Добро пожаловать на наш сайт" },
+{ "id": "about-preview", "type": "text", "content": "Коротко о компании. Мы предлагаем качественные услуги и решения." },
+{ "id": "services-list", "type": "list", "content": "Наши услуги включают: разработка сайтов, дизайн, SEO, поддержка." },
+{ "id": "gallery-preview", "type": "image-grid", "content": "Секция галереи с примерами работ." },
+{ "id": "reviews-preview", "type": "testimonials", "content": "Отзывы клиентов: высокая удовлетворенность и повторные обращения." },
+{ "id": "contact-form", "type": "form", "content": "Форма связи: имя, email, сообщение." }
+],
+"metadata": {
+"siteTitle": "EGO сайт",
+"description": "Профессиональные веб-решения и цифровой маркетинг.",
+"keywords": ["веб-разработка", "дизайн", "SEO", "поддержка"]
+},
+"localization": {
+"lang": "ru",
+"translations": {
+"menu": "Меню",
+"contact": "Контакты",
+"send": "Отправить"
+}
+}
 }

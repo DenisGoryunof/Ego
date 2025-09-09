@@ -1,0 +1,59 @@
+Структура папок тома Хранилище
+Серийный номер тома: 180E-533F
+E:.
+|   .htaccess
+|   404.html
+|   about.html
+|   contact.html
+|   EGO сайт.pdf
+|   Ego.zip
+|   gallery.html
+|   index.html
+|   README.md
+|   reviews.html
+|   services.html
+|   _redirects
+|   структура.txt
+|   
++---admin
+|   |   .htaccess
+|   |   .htpasswd
+|   |   access
+|   |   index.html
+|   |   INSTRUCTIONS.txt
+|   |   login.html
+|   |   
+|   +---api
+|   |       admin-api.php
+|   |       update-content.php
+|   |       
+|   +---css
+|   |       admin.css
+|   |       
+|   \---js
+|           admin.js
+|           
++---css
+|       404.css
+|       about.css
+|       contact.css
+|       gallery.css
+|       home.css
+|       reviews.css
+|       services.css
+|       style.css
+|       
++---data
+|       content.json
+|       
+\---js
+        404.js
+        error-handler.js
+        form.js
+        gallery.js
+        home.js
+        map.js
+        reviews.js
+        script.js
+        sw.js
+        
