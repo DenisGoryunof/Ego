@@ -1,96 +1,16 @@
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Admin Panel</title>
-<link rel="stylesheet" href="/admin/css/admin.css" />
-<style>
-/* Локальные стили минимально, чтобы страница работала без внешних зависимостей */
-:root { --bg: #f6f7f9; --card: #fff; --muted:#6b7280; --accent:#2563eb; }
-body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial; background: var(--bg); color:#111; }
-.admin-header{ background:#1f2937; color:white; padding:14px 20px; display:flex; align-items:center; justify-content:space-between; }
-.admin-brand{ font-size:18px; margin:0; }
-.admin-nav{ display:flex; gap:8px; }
-.admin-nav-link{ background:#374151; color:white; border:0; padding:8px 12px; border-radius:6px; cursor:pointer; }
-.admin-container{ display:flex; padding:20px; gap:20px; }
-.admin-panel{ background:var(--card); border:1px solid #e5e7eb; border-radius:8px; padding:16px; width:100%; min-height:320px; }
-.panel-title{ font-weight:600; margin-bottom:12px; }
-.section{ display:none; }
-.section.active{ display:block; }
-.form-row{ display:flex; gap:10px; align-items:center; margin-bottom:8px; }
-.form-row label{ min-width:120px; font-size:14px; color:var(--muted); }
-.form-row input, .form-row textarea { flex:1; padding:8px 10px; border:1px solid #d1d5db; border-radius:6px; min-width:0; }
-.button{ background:var(--accent); color:white; border:0; padding:8px 12px; border-radius:6px; cursor:pointer; }
-.divider{ height:1px; background:#e5e7eb; margin:12px 0; }
-</style>
+  <meta charset="UTF-8" />
+  <title>Админ панель</title>
+  <link rel="stylesheet" href="css/admin.css" />
 </head>
 <body>
-<header class="admin-header" role="banner">
-<div class="admin-header-inner" aria-label="Шапка администратора">
-<h1 class="admin-brand">Admin Panel</h1>
-</div>
-<nav class="admin-nav" aria-label="Основная навигация" style="margin-left:auto">
-<button class="admin-nav-link" data-panel="contents" type="button">Contents</button>
-<button class="admin-nav-link" data-panel="settings" type="button">Settings</button>
-<button class="admin-nav-link" data-panel="media" type="button">Media</button>
-<button class="admin-nav-link" data-panel="auth" type="button">Auth</button>
-</nav>
-</header>
-
-<main class="admin-container" role="main" aria-label="Панель управления">
-<section id="panel-contents" class="admin-panel section active" aria-label="Contents">
-<div class="panel-title">Contents</div>
-<div class="form-row">
-<label for="content-title">Название контента</label>
-<input id="content-title" type="text" placeholder="Например: Главная страница" />
-</div>
-<div class="form-row">
-<label for="content-body">Текст контента</label>
-<textarea id="content-body" rows="6" placeholder="Текст содержимого"></textarea>
-</div>
-<div class="divider"></div>
-<button class="button" id="save-contents" type="button">Сохранить</button>
-</section>
-
-&lt;section id="panel-settings" class="admin-panel section" aria-label="Settings"&gt;
-  &lt;div class="panel-title"&gt;Settings&lt;/div&gt;
-  &lt;div class="form-row"&gt;
-    &lt;label for="site-title"&gt;Заголовок сайта&lt;/label&gt;
-    &lt;input id="site-title" type="text" placeholder="Заголовок" /&gt;
-  &lt;/div&gt;
-  &lt;div class="form-row"&gt;
-    &lt;label for="site-theme"&gt;Тема&lt;/label&gt;
-    &lt;input id="site-theme" type="text" placeholder="light/dark" /&gt;
-  &lt;/div&gt;
-  &lt;div class="divider"&gt;&lt;/div&gt;
-  &lt;button class="button" id="save-settings" type="button"&gt;Сохранить&lt;/button&gt;
-&lt;/section&gt;
-
-&lt;section id="panel-media" class="admin-panel section" aria-label="Media"&gt;
-  &lt;div class="panel-title"&gt;Media&lt;/div&gt;
-  &lt;div class="form-row"&gt;
-    &lt;label for="upload-media"&gt;Добавить медиа&lt;/label&gt;
-    &lt;input id="upload-media" type="file" /&gt;
-  &lt;/div&gt;
-  &lt;div class="divider"&gt;&lt;/div&gt;
-  &lt;div id="media-list" aria-label="Список медиа"&gt;&lt;/div&gt;
-&lt;/section&gt;
-
-&lt;section id="panel-auth" class="admin-panel section" aria-label="Auth"&gt;
-  &lt;div class="panel-title"&gt;Auth&lt;/div&gt;
-  &lt;div class="form-row"&gt;
-    &lt;label for="auth-user"&gt;Пользователь&lt;/label&gt;
-    &lt;input id="auth-user" type="text" placeholder="Username" /&gt;
-  &lt;/div&gt;
-  &lt;div class="form-row"&gt;
-    &lt;label for="auth-pass"&gt;Пароль&lt;/label&gt;
-    &lt;input id="auth-pass" type="password" placeholder="Password" /&gt;
-  &lt;/div&gt;
-  &lt;div class="divider"&gt;&lt;/div&gt;
-  &lt;button class="button" id="save-auth" type="button"&gt;Сохранить&lt;/button&gt;
-&lt;/section&gt;
-</main>
-
-<script src="/admin/js/admin.js"></script>
+  <h1>Административная панель</h1>
+  <div id="admin-app">
+    <p>Добро пожаловать. Используйте API для управления контентом.</p>
+    <a href="/admin/login.html">Войти</a>
+  </div>
+  <script src="js/admin.js"></script>
 </body>
 </html>

@@ -1,0 +1,4 @@
+*.log
+*.tmp
+.htaccess
+.htpasswd

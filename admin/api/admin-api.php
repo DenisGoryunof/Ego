@@ -1,150 +1,47 @@
 <?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
-
-// Simple authentication check
-function checkAuth() {
-    $headers = apache_request_headers();
-    if (!isset($headers['Authorization']) || $headers['Authorization'] !== 'Bearer mock_jwt_token') {
-        http_response_code(401);
-        echo json_encode(['error' => 'Unauthorized']);
-        exit;
-    }
+// Простой API админки: безопасно ограниченный доступ
+session_start();
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $user = $_POST['username'] ?? '';
+  $pass = $_POST['password'] ?? '';
+  // Пример проверки (замените на полноценную систему)
+  if ($user === 'admin' && $pass === 'YOUR_STRONG_PASSWORD') {
+    $_SESSION['admin'] = true;
+    echo json_encode(['status' => 'ok', 'message' => 'Authenticated']);
+    exit;
+  } else {
+    http_response_code(401);
+    echo json_encode(['status' => 'error', 'message' => 'Invalid credentials']);
+    exit;
+  }
+}
+if (!isset($_SESSION['admin']) || $_SESSION['admin'] !== true) {
+  http_response_code(403);
+  echo json_encode(['status' => 'forbidden']);
+  exit;
 }
 
-// Get request data
-$method = $_SERVER['REQUEST_METHOD'];
-$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$path = str_replace('/admin/api/', '', $path);
-
-checkAuth();
-
-// Mock database (replace with real database)
-$dataFile = 'data.json';
-
-function getData() {
-    global $dataFile;
-    if (!file_exists($dataFile)) {
-        return ['bookings' => [], 'services' => [], 'clients' => []];
-    }
-    return json_decode(file_get_contents($dataFile), true);
+// Пример роутинга
+$action = $_GET['action'] ?? '';
+if ($action === 'get-content') {
+  // читаем контент из data/content.json или другого источника
+  $json = file_get_contents('../../data/content.json');
+  header('Content-Type: application/json');
+  echo $json;
+  exit;
 }
 
-function saveData($data) {
-    global $dataFile;
-    file_put_contents($dataFile, json_encode($data, JSON_PRETTY_PRINT));
-}
-
-// API Routes
-switch ($path) {
-    case 'bookings':
-        handleBookings($method);
-        break;
-    case 'services':
-        handleServices($method);
-        break;
-    case 'login':
-        handleLogin($method);
-        break;
-    default:
-        http_response_code(404);
-        echo json_encode(['error' => 'Not found']);
-}
-
-function handleLogin($method) {
-    if ($method !== 'POST') {
-        http_response_code(405);
-        echo json_encode(['error' => 'Method not allowed']);
-        return;
-    }
-
-    $input = json_decode(file_get_contents('php://input'), true);
-    
-    if ($input['username'] === 'admin' && $input['password'] === 'admin123') {
-        echo json_encode([
-            'success' => true,
-            'token' => 'mock_jwt_token',
-            'user' => ['username' => 'admin', 'role' => 'admin']
-        ]);
-    } else {
-        http_response_code(401);
-        echo json_encode(['error' => 'Invalid credentials']);
-    }
-}
-
-function handleBookings($method) {
-    $data = getData();
-    
-    switch ($method) {
-        case 'GET':
-            echo json_encode($data['bookings']);
-            break;
-            
-        case 'POST':
-            $input = json_decode(file_get_contents('php://input'), true);
-            $newBooking = [
-                'id' => uniqid(),
-                'client' => $input['client'],
-                'service' => $input['service'],
-                'date' => $input['date'],
-                'status' => $input['status'],
-                'comment' => $input['comment'] ?? '',
-                'created_at' => date('c')
-            ];
-            $data['bookings'][] = $newBooking;
-            saveData($data);
-            echo json_encode($newBooking);
-            break;
-            
-        case 'PUT':
-            // Update booking
-            break;
-            
-        case 'DELETE':
-            $id = $_GET['id'] ?? null;
-            if ($id) {
-                $data['bookings'] = array_filter($data['bookings'], fn($b) => $b['id'] !== $id);
-                saveData($data);
-                echo json_encode(['success' => true]);
-            }
-            break;
-    }
-}
-
-function handleServices($method) {
-    $data = getData();
-    
-    switch ($method) {
-        case 'GET':
-            echo json_encode($data['services']);
-            break;
-            
-        case 'POST':
-            $input = json_decode(file_get_contents('php://input'), true);
-            $newService = [
-                'id' => uniqid(),
-                'name' => $input['name'],
-                'category' => $input['category'],
-                'price' => (float)$input['price'],
-                'duration' => $input['duration'],
-                'description' => $input['description'] ?? '',
-                'created_at' => date('c')
-            ];
-            $data['services'][] = $newService;
-            saveData($data);
-            echo json_encode($newService);
-            break;
-            
-        case 'DELETE':
-            $id = $_GET['id'] ?? null;
-            if ($id) {
-                $data['services'] = array_filter($data['services'], fn($s) => $s['id'] !== $id);
-                saveData($data);
-                echo json_encode(['success' => true]);
-            }
-            break;
-    }
+if ($action === 'update-content') {
+  // простая замена контента (для примера)
+  $input = json_decode(file_get_contents('php://input'), true);
+  if (isset($input['content'])) {
+    // сохранение в файл (только как пример)
+    file_put_contents('../../data/content.json', json_encode($input['content']));
+    echo json_encode(['status' => 'ok']);
+  } else {
+    http_response_code(400);
+    echo json_encode(['status' => 'error', 'message' => 'No content provided']);
+  }
+  exit;
 }
 ?>

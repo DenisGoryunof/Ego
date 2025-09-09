@@ -1,4 +1,7 @@
 AuthType Basic
-AuthName "Admin Area"
-AuthUserFile /path/to/.htpasswd
+AuthName "Restricted Area"
+AuthUserFile /path/to/admin/.htpasswd
 Require valid-user
+Order allow,deny
+Allow from all
+Satisfy all
