@@ -442,14 +442,29 @@
 }
 
 .booking {
-    padding: 60px 0;
-    margin-bottom: 40px; /* Добавляем отступ снизу */
+    padding: 80px 0;
+    background: #fff;
     position: relative;
-    z-index: 2; /* Поднимаем над футером */
+    z-index: 10;
 }
 
 .modern-footer {
     position: relative;
-    z-index: 1; /* Опускаем футер ниже */
-    margin-top: -40px; /* Компенсируем отступ */
+    margin-top: -60px; /* Поднимаем футер вверх для наложения волны */
+    z-index: 5;
+}
+
+.footer-wave {
+    height: 120px;
+    display: block;
+}
+
+.footer-wave svg {
+    width: 100%;
+    height: 120px;
+    display: block;
+}
+
+.shape-fill {
+    fill: #ffffff; /* Цвет должен совпадать с фоном футера */
 }
