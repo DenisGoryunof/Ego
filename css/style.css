@@ -1234,3 +1234,16 @@ html {
         padding: 25px 15px;
     }
 }
+
+.booking {
+    padding: 60px 0;
+    margin-bottom: 40px; /* Добавляем отступ снизу */
+    position: relative;
+    z-index: 2; /* Поднимаем над футером */
+}
+
+.modern-footer {
+    position: relative;
+    z-index: 1; /* Опускаем футер ниже */
+    margin-top: -40px; /* Компенсируем отступ */
+}
