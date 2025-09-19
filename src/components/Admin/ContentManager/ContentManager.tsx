@@ -98,7 +98,7 @@ const ContentManager: React.FC<ContentManagerProps> = ({ content, onUpdate }) =>
         {/* Services Section */}
         <section className="content-section">
           <h3>Услуги</h3>
-          {editedContent.services.map((service: ServiceItem, index: number) => (
+          {editedContent.services.map((service, index) => (
             <div key={service.id} className="service-editor">
               <h4>{service.title}</h4>
               <div className="form-group">
