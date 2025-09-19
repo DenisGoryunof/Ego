@@ -76,3 +76,41 @@ const GalleryManager: React.FC<GalleryManagerProps> = ({ gallery, onUpdate }) =>
 
       <div className="gallery-grid">
         {editedGallery.map((item) => (
+          <div key={item.id} className="gallery-item">
+            <div className="image-preview">
+              {item.url ? (
+                <img src={item.url} alt={item.title} />
+              ) : (
+                <div className="image-placeholder">
+                  <span>Нет изображения</span>
+                </div>
+              )}
+            </div>
+            <div className="item-details">
+              <input
+                type="text"
+                value={item.title}
+                onChange={(e) => handleUpdateItem(item.id, 'title', e.target.value)}
+                placeholder="Название фото"
+              />
+              <textarea
+                value={item.description}
+                onChange={(e) => handleUpdateItem(item.id, 'description', e.target.value)}
+                placeholder="Описание фото"
+                rows={2}
+              />
+              <select
+                value={item.category}
+                onChange={(e) => handleUpdateItem(item.id, 'category', e.target.value)}
+              >
+                <option value="general">Общее</option>
+                <option value="epilation">Эпиляция</option>
+                <option value="tan">Загар</option>
+                <option value="nails">Маникюр</option>
+                <option value="lash">Ресницы</option>
+              </select>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                 
