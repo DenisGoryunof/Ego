@@ -1,0 +1,242 @@
+
+.services-page {
+  padding: 2rem 0;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.page-header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.page-header p {
+  font-size: 1.25rem;
+  color: #666;
+}
+
+.service-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  margin-bottom: 6rem;
+  padding: 2rem;
+  border-radius: 20px;
+  background: white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.service-section.reverse {
+  direction: rtl;
+}
+
+.service-section.reverse > * {
+  direction: ltr;
+}
+
+.service-content h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.service-content p {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.advantages-list {
+  margin-bottom: 2rem;
+}
+
+.advantage-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  color: #555;
+}
+
+.check-icon {
+  color: #6a11cb;
+  font-weight: bold;
+}
+
+.price-list {
+  margin-bottom: 2rem;
+}
+
+.price-list h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.price-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.price-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: between;
+}
+
+.price {
+  font-weight: 600;
+  color: #6a11cb;
+  margin-left: auto;
+}
+
+.usage-list {
+  margin-bottom: 2rem;
+}
+
+.usage-list h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.usage-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.usage-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+  color: #555;
+}
+
+.price-total {
+  margin-bottom: 2rem;
+}
+
+.price-total p {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.service-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-placeholder {
+  width: 100%;
+  height: 300px;
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 500;
+}
+
+.booking-section {
+  text-align: center;
+  padding: 4rem 0;
+  background: linear-gradient(135deg, rgba(106, 17, 203, 0.1) 0%, rgba(37, 117, 252, 0.1) 100%);
+  border-radius: 20px;
+  margin-top: 4rem;
+}
+
+.booking-section h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.btn {
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(106, 17, 203, 0.3);
+}
+
+@media (max-width: 968px) {
+  .service-section {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    text-align: center;
+  }
+  
+  .service-section.reverse {
+    direction: ltr;
+  }
+  
+  .image-placeholder {
+    height: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header h1 {
+    font-size: 2rem;
+  }
+  
+  .page-header p {
+    font-size: 1.1rem;
+  }
+  
+  .service-content h2 {
+    font-size: 1.75rem;
+  }
+  
+  .booking-section h2 {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .services-page {
+    padding: 1rem 0;
+  }
+  
+  .service-section {
+    padding: 1.5rem;
+    margin-bottom: 4rem;
+  }
+  
+  .page-header {
+    margin-bottom: 2rem;
+  }
+  
+  .booking-section {
+    padding: 2rem 0;
+    margin-top: 2rem;
+  }
+}
