@@ -113,4 +113,24 @@ const GalleryManager: React.FC<GalleryManagerProps> = ({ gallery, onUpdate }) =>
                 type="file"
                 accept="image/*"
                 onChange={(e) => {
-                 
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    handleImageUpload(file, item.id);
+                  }
+                }}
+              />
+              <button
+                onClick={() => handleRemoveItem(item.id)}
+                className="btn btn-danger"
+              >
+                Удалить
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default GalleryManager;

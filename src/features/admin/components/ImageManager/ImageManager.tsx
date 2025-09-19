@@ -1,9 +1,9 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { persistence } from '../../../../utils/persistence';
 import './ImageManager.css';
 
-interface GalleryImage {
+interface ImageItem {
   id: string;
   title: string;
   description: string;
@@ -12,144 +12,134 @@ interface GalleryImage {
   order: number;
 }
 
-const ImageManager: React.FC = () => {
-  const [images, setImages] = useState<GalleryImage[]>([]);
-  const [editingImage, setEditingImage] = useState<GalleryImage | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+interface ImageManagerProps {
+  images: ImageItem[];
+  onUpdate: (images: ImageItem[]) => Promise<void>;
+}
 
-  useEffect(() => {
-    loadImages();
-  }, []);
-
-  const loadImages = async () => {
-    try {
-      const storedImages = await persistence.getItem('gallery_images');
-      if (storedImages) {
-        setImages(JSON.parse(storedImages));
-      }
-    } catch (error) {
-      console.error('Error loading images:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const saveImages = async (newImages: GalleryImage[]) => {
-    try {
-      await persistence.setItem('gallery_images', JSON.stringify(newImages));
-      setImages(newImages);
-    } catch (error) {
-      console.error('Error saving images:', error);
-    }
-  };
+const ImageManager: React.FC<ImageManagerProps> = ({ images, onUpdate }) => {
+  const [editedImages, setEditedImages] = useState(images);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleAddImage = () => {
-    setEditingImage({
+    const newImage: ImageItem = {
       id: Date.now().toString(),
-      title: '',
+      title: 'Новое изображение',
       description: '',
       category: 'general',
       url: '',
-      order: images.length
-    });
-    setIsModalOpen(true);
+      order: editedImages.length
+    };
+    setEditedImages([...editedImages, newImage]);
   };
 
-  const handleEditImage = (image: GalleryImage) => {
-    setEditingImage(image);
-    setIsModalOpen(true);
+  const handleRemoveImage = (id: string) => {
+    setEditedImages(editedImages.filter(img => img.id !== id));
   };
 
-  const handleDeleteImage = async (id: string) => {
-    if (window.confirm('Вы уверены, что хотите удалить это изображение?')) {
-      const newImages = images.filter(img => img.id !== id);
-      await saveImages(newImages);
+  const handleUpdateImage = (id: string, field: keyof ImageItem, value: string) => {
+    setEditedImages(editedImages.map(img => 
+      img.id === id ? { ...img, [field]: value } : img
+    ));
+  };
+
+  const handleSave = async () => {
+    setIsUploading(true);
+    try {
+      await onUpdate(editedImages);
+    } catch (error) {
+      console.error('Error saving images:', error);
+    } finally {
+      setIsUploading(false);
     }
   };
 
-  const handleSaveImage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingImage) return;
-
-    let newImages: GalleryImage[];
-    if (images.find(img => img.id === editingImage.id)) {
-      newImages = images.map(img => 
-        img.id === editingImage.id ? editingImage : img
-      );
-    } else {
-      newImages = [...images, editingImage];
-    }
-
-    await saveImages(newImages);
-    setIsModalOpen(false);
-    setEditingImage(null);
+  const handleImageUpload = async (file: File, imageId: string) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const url = e.target?.result as string;
+      handleUpdateImage(imageId, 'url', url);
+    };
+    reader.readAsDataURL(file);
   };
-
-  const handleInputChange = (field: keyof GalleryImage, value: string) => {
-    if (editingImage) {
-      setEditingImage({ ...editingImage, [field]: value });
-    }
-  };
-
-  const handleReorder = async (id: string, direction: 'up' | 'down') => {
-    const index = images.findIndex(img => img.id === id);
-    if ((direction === 'up' && index === 0) || 
-        (direction === 'down' && index === images.length - 1)) {
-      return;
-    }
-
-    const newImages = [...images];
-    const newIndex = direction === 'up' ? index - 1 : index + 1;
-    
-    // Меняем порядок
-    [newImages[index], newImages[newIndex]] = [newImages[newIndex], newImages[index]];
-    
-    // Обновляем порядковые номера
-    newImages.forEach((img, idx) => {
-      img.order = idx;
-    });
-
-    await saveImages(newImages);
-  };
-
-  if (isLoading) {
-    return <div className="loading">Загрузка...</div>;
-  }
 
   return (
     <div className="image-manager">
       <div className="manager-header">
         <h2>Управление изображениями</h2>
-        <button onClick={handleAddImage} className="btn btn-primary">
-          Добавить изображение
-        </button>
+        <div className="manager-actions">
+          <button onClick={handleAddImage} className="btn btn-secondary">
+            Добавить изображение
+          </button>
+          <button 
+            onClick={handleSave} 
+            className="btn btn-primary"
+            disabled={isUploading}
+          >
+            {isUploading ? 'Сохранение...' : 'Сохранить изменения'}
+          </button>
+        </div>
       </div>
 
       <div className="images-grid">
-        {images.map((image) => (
+        {editedImages.map((image) => (
           <div key={image.id} className="image-card">
             <div className="image-preview">
               {image.url ? (
                 <img src={image.url} alt={image.title} />
               ) : (
-                <div className="image-placeholder">Нет изображения</div>
+                <div className="image-placeholder">
+                  <span>Нет изображения</span>
+                </div>
               )}
             </div>
-            <div className="image-info">
-              <h3>{image.title || 'Без названия'}</h3>
-              <p>{image.description}</p>
-              <span className="category">{image.category}</span>
-            </div>
-            <div className="image-actions">
-              <button 
-                onClick={() => handleReorder(image.id, 'up')}
-                className="btn btn-small"
-                disabled={image.order === 0}
+            <div className="image-details">
+              <input
+                type="text"
+                value={image.title}
+                onChange={(e) => handleUpdateImage(image.id, 'title', e.target.value)}
+                placeholder="Название изображения"
+              />
+              <textarea
+                value={image.description}
+                onChange={(e) => handleUpdateImage(image.id, 'description', e.target.value)}
+                placeholder="Описание изображения"
+                rows={2}
+              />
+              <select
+                value={image.category}
+                onChange={(e) => handleUpdateImage(image.id, 'category', e.target.value)}
               >
-                ↑
-              </button>
-              <button 
-                onClick={() => handleReorder(image.id, 'down')}
-                className="btn btn-small"
-                disabled
+                <option value="general">Общее</option>
+                <option value="epilation">Эпиляция</option>
+                <option value="tan">Загар</option>
+                <option value="nails">Маникюр</option>
+                <option value="lash">Ресницы</option>
+              </select>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    handleImageUpload(file, image.id);
+                  }
+                }}
+              />
+              <div className="image-actions">
+                <button
+                  onClick={() => handleRemoveImage(image.id)}
+                  className="btn btn-danger"
+                >
+                  Удалить
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default ImageManager;
