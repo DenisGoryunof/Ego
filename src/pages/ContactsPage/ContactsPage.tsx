@@ -3,6 +3,14 @@ import React from 'react';
 import './ContactsPage.css';
 
 const ContactsPage: React.FC = () => {
+  const handleOpenMap = () => {
+    window.open('https://yandex.ru/maps/959/sevastopol/house/shestaya_bastionnaya_ulitsa_40/Z0oYdQZiQEwCQFtjfXVyeX9lYQ==/?ll=33.522500%2C44.606944&z=17', '_blank');
+  };
+
+  const handleOpenFullscreen = () => {
+    window.open('https://yandex.ru/maps/959/sevastopol/house/shestaya_bastionnaya_ulitsa_40/Z0oYdQZiQEwCQFtjfXVyeX9lYQ==/?ll=33.522500%2C44.606944&z=17&mode=whatshere', '_blank');
+  };
+
   return (
     <div className="contacts-page">
       <div className="container">
@@ -55,29 +63,39 @@ const ContactsPage: React.FC = () => {
               <div className="social-contact">
                 <h3>Мы в соцсетях</h3>
                 <div className="social-buttons">
-                  <a href="https://vk.com/lunalikapronogti" className="social-btn vk">
+                  <a href="https://vk.com/lunalikapronogti" className="social-btn vk" target="_blank" rel="noopener noreferrer">
                     VK
                   </a>
-                  <a href="https://wa.me/79788590384" className="social-btn whatsapp">
+                  <a href="https://wa.me/79788590384" className="social-btn whatsapp" target="_blank" rel="noopener noreferrer">
                     WhatsApp
                   </a>
-                  <a href="https://t.me/79788590384" className="social-btn telegram">
+                  <a href="https://t.me/79788590384" className="social-btn telegram" target="_blank" rel="noopener noreferrer">
                     Telegram
                   </a>
                 </div>
               </div>
             </div>
 
-            {/* Map Placeholder */}
+            {/* Interactive Map */}
             <div className="map-container">
-              <div className="map-placeholder">
-                <span>Карта проезда</span>
-                <p>г. Севастополь, ул. 6-я Бастионная, дом 40</p>
+              <div className="map-content">
+                <h3>Мы находимся здесь</h3>
+                <div className="map-iframe-container">
+                  <iframe
+                    src="https://yandex.ru/map-widget/v1/?ll=33.522500%2C44.606944&mode=whatshere&whatshere%5Bpoint%5D=33.522500%2C44.606944&whatshere%5Bzoom%5D=17&z=17"
+                    width="100%"
+                    height="400"
+                    frameBorder="0"
+                    allowFullScreen
+                    title="Карта расположения салона красоты Ego"
+                    loading="lazy"
+                  ></iframe>
+                </div>
                 <div className="map-actions">
-                  <button className="btn btn-secondary">
+                  <button onClick={handleOpenMap} className="btn btn-secondary">
                     Построить маршрут
                   </button>
-                  <button className="btn btn-secondary">
+                  <button onClick={handleOpenFullscreen} className="btn btn-secondary">
                     Полный экран
                   </button>
                 </div>
@@ -89,7 +107,7 @@ const ContactsPage: React.FC = () => {
         {/* Booking Section */}
         <section className="booking-section">
           <h2>Записаться на процедуру</h2>
-          <a href="https://ego-forms.netlify.app/" className="btn btn-primary">
+          <a href="https://ego-forms.netlify.app/" className="btn btn-primary" target="_blank" rel="noopener noreferrer">
             Записаться на процедуру
           </a>
         </section>

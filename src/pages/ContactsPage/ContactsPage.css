@@ -123,29 +123,33 @@
   align-items: center;
 }
 
-.map-placeholder {
+.map-content {
   width: 100%;
-  height: 400px;
-  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  background: white;
   border-radius: 15px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: white;
   padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.map-content h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: #333;
   text-align: center;
 }
 
-.map-placeholder span {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
+.map-iframe-container {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
-.map-placeholder p {
-  margin-bottom: 2rem;
-  font-size: 1.1rem;
+.map-iframe-container iframe {
+  border-radius: 12px;
+  display: block;
 }
 
 .map-actions {
@@ -163,6 +167,7 @@
   transition: all 0.3s ease;
   border: none;
   cursor: pointer;
+  font-size: 0.9rem;
 }
 
 .btn-primary {
@@ -176,14 +181,14 @@
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 2px solid white;
+  background: transparent;
+  color: #6a11cb;
+  border: 2px solid #6a11cb;
 }
 
 .btn-secondary:hover {
-  background: white;
-  color: #6a11cb;
+  background: #6a11cb;
+  color: white;
 }
 
 .booking-section {
@@ -206,8 +211,8 @@
     gap: 2rem;
   }
   
-  .map-placeholder {
-    height: 300px;
+  .map-content {
+    padding: 1.5rem;
   }
 }
 
@@ -227,6 +232,16 @@
   
   .booking-section h2 {
     font-size: 2rem;
+  }
+  
+  .map-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .btn {
+    width: 100%;
+    max-width: 250px;
   }
 }
 
@@ -254,11 +269,56 @@
     justify-content: center;
   }
   
-  .map-actions {
-    flex-direction: column;
-  }
-  
   .booking-section {
     padding: 2rem 0;
   }
+  
+  .map-content {
+    padding: 1rem;
+  }
+  
+  .map-iframe-container {
+    height: 300px;
+  }
+}
+
+/* Анимации для плавного появления */
+.map-iframe-container {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Улучшение доступности */
+.map-iframe-container:focus-within {
+  outline: 2px solid #6a11cb;
+  outline-offset: 2px;
+}
+
+/* Оптимизация для медленных соединений */
+.map-iframe-container {
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.map-iframe-container::before {
+  content: 'Загрузка карты...';
+  display: none;
+}
+
+.map-iframe-container.loading::before {
+  display: flex;
 }
