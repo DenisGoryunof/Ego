@@ -1,20 +1,11 @@
 
 import React, { useState } from 'react';
-import { persistence } from '../../../../utils/persistence';
+import { GalleryItem } from '../../../../types/admin';
 import './ImageManager.css';
 
-interface ImageItem {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  url: string;
-  order: number;
-}
-
 interface ImageManagerProps {
-  images: ImageItem[];
-  onUpdate: (images: ImageItem[]) => Promise<void>;
+  images: GalleryItem[];
+  onUpdate: (images: GalleryItem[]) => Promise<void>;
 }
 
 const ImageManager: React.FC<ImageManagerProps> = ({ images, onUpdate }) => {
@@ -22,7 +13,7 @@ const ImageManager: React.FC<ImageManagerProps> = ({ images, onUpdate }) => {
   const [isUploading, setIsUploading] = useState(false);
 
   const handleAddImage = () => {
-    const newImage: ImageItem = {
+    const newImage: GalleryItem = {
       id: Date.now().toString(),
       title: 'Новое изображение',
       description: '',
@@ -37,7 +28,7 @@ const ImageManager: React.FC<ImageManagerProps> = ({ images, onUpdate }) => {
     setEditedImages(editedImages.filter(img => img.id !== id));
   };
 
-  const handleUpdateImage = (id: string, field: keyof ImageItem, value: string) => {
+  const handleUpdateImage = (id: string, field: keyof GalleryItem, value: string) => {
     setEditedImages(editedImages.map(img => 
       img.id === id ? { ...img, [field]: value } : img
     ));

@@ -20,8 +20,6 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
 
     try {
       // Проверка учетных данных (в реальном приложении это должно быть на сервере)
-      const storedHash = await persistence.getItem('admin_hash');
-      
       // Простая проверка (в продакшене используйте хэширование и серверную аутентификацию)
       if (username === 'admin' && password === 'admin123') {
         // Сохраняем сессию

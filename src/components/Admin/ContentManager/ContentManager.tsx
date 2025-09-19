@@ -1,36 +1,55 @@
 
 import React, { useState } from 'react';
-import { ContentData } from '../../../types/admin';
+import { ContentData, ServiceItem } from '../../../types/admin';
 import './ContentManager.css';
 
 interface ContentManagerProps {
   content: ContentData;
-  onUpdate: (data: Partial<{ content: ContentData }>) => Promise<void>;
+  onUpdate: (data: Partial<ContentData>) => Promise<void>;
 }
 
 const ContentManager: React.FC<ContentManagerProps> = ({ content, onUpdate }) => {
   const [editedContent, setEditedContent] = useState(content);
   const [isSaving, setIsSaving] = useState(false);
 
+  const handleHeroUpdate = (field: keyof ContentData['hero'], value: string) => {
+    setEditedContent(prev => ({
+      ...prev,
+      hero: {
+        ...prev.hero,
+        [field]: value
+      }
+    }));
+  };
+
+  const handleServiceUpdate = (index: number, field: keyof ServiceItem, value: string) => {
+    setEditedContent(prev => ({
+      ...prev,
+      services: prev.services.map((service, i) => 
+        i === index ? { ...service, [field]: value } : service
+      )
+    }));
+  };
+
+  const handleAboutUpdate = (field: keyof ContentData['about'], value: string) => {
+    setEditedContent(prev => ({
+      ...prev,
+      about: {
+        ...prev.about,
+        [field]: value
+      }
+    }));
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await onUpdate({ content: editedContent });
+      await onUpdate(editedContent);
     } catch (error) {
       console.error('Error saving content:', error);
     } finally {
       setIsSaving(false);
     }
-  };
-
-  const handleChange = (section: keyof ContentData, field: string, value: string) => {
-    setEditedContent(prev => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        [field]: value
-      }
-    }));
   };
 
   return (
@@ -49,99 +68,85 @@ const ContentManager: React.FC<ContentManagerProps> = ({ content, onUpdate }) =>
       <div className="content-sections">
         {/* Hero Section */}
         <section className="content-section">
-          <h3>Главная секция</h3>
+          <h3>Главный баннер</h3>
           <div className="form-group">
             <label>Заголовок</label>
             <input
               type="text"
               value={editedContent.hero.title}
-              onChange={(e) => handleChange('hero', 'title', e.target.value)}
-              placeholder="Заголовок главной секции"
+              onChange={(e) => handleHeroUpdate('title', e.target.value)}
             />
           </div>
           <div className="form-group">
-            <label>Описание</label>
-            <textarea
-              value={editedContent.hero.description}
-              onChange={(e) => handleChange('hero', 'description', e.target.value)}
-              placeholder="Описание главной секции"
-              rows={3}
+            <label>Подзаголовок</label>
+            <input
+              type="text"
+              value={editedContent.hero.subtitle}
+              onChange={(e) => handleHeroUpdate('subtitle', e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label>Текст кнопки</label>
+            <input
+              type="text"
+              value={editedContent.hero.ctaText}
+              onChange={(e) => handleHeroUpdate('ctaText', e.target.value)}
             />
           </div>
         </section>
 
-        {/* Services */}
+        {/* Services Section */}
         <section className="content-section">
           <h3>Услуги</h3>
-          {Object.entries(editedContent.services).map(([key, service]) => (
-            <div key={key} className="service-editor">
+          {editedContent.services.map((service: ServiceItem, index: number) => (
+            <div key={service.id} className="service-editor">
               <h4>{service.title}</h4>
+              <div className="form-group">
+                <label>Название услуги</label>
+                <input
+                  type="text"
+                  value={service.title}
+                  onChange={(e) => handleServiceUpdate(index, 'title', e.target.value)}
+                />
+              </div>
               <div className="form-group">
                 <label>Описание</label>
                 <textarea
                   value={service.description}
-                  onChange={(e) => handleChange('services', key, {
-                    ...service,
-                    description: e.target.value
-                  })}
+                  onChange={(e) => handleServiceUpdate(index, 'description', e.target.value)}
                   rows={3}
+                />
+              </div>
+              <div className="form-group">
+                <label>Цена (опционально)</label>
+                <input
+                  type="text"
+                  value={service.price || ''}
+                  onChange={(e) => handleServiceUpdate(index, 'price', e.target.value)}
+                  placeholder="2500 руб."
                 />
               </div>
             </div>
           ))}
         </section>
 
-        {/* About */}
+        {/* About Section */}
         <section className="content-section">
           <h3>О нас</h3>
           <div className="form-group">
-            <label>История</label>
-            <textarea
-              value={editedContent.about.story}
-              onChange={(e) => handleChange('about', 'story', e.target.value)}
-              rows={4}
-              placeholder="История салона"
-            />
-          </div>
-          <div className="form-group">
-            <label>Философия</label>
-            <textarea
-              value={editedContent.about.philosophy}
-              onChange={(e) => handleChange('about', 'philosophy', e.target.value)}
-              rows={4}
-              placeholder="Философия салона"
-            />
-          </div>
-        </section>
-
-        {/* Contacts */}
-        <section className="content-section">
-          <h3>Контакты</h3>
-          <div className="form-group">
-            <label>Адрес</label>
+            <label>Заголовок</label>
             <input
               type="text"
-              value={editedContent.contacts.address}
-              onChange={(e) => handleChange('contacts', 'address', e.target.value)}
-              placeholder="Адрес салона"
+              value={editedContent.about.title}
+              onChange={(e) => handleAboutUpdate('title', e.target.value)}
             />
           </div>
           <div className="form-group">
-            <label>Телефон</label>
-            <input
-              type="tel"
-              value={editedContent.contacts.phone}
-              onChange={(e) => handleChange('contacts', 'phone', e.target.value)}
-              placeholder="Телефон"
-            />
-          </div>
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              type="email"
-              value={editedContent.contacts.email}
-              onChange={(e) => handleChange('contacts', 'email', e.target.value)}
-              placeholder="Email"
+            <label>Описание</label>
+            <textarea
+              value={editedContent.about.description}
+              onChange={(e) => handleAboutUpdate('description', e.target.value)}
+              rows={4}
             />
           </div>
         </section>
