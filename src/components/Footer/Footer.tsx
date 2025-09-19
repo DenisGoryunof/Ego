@@ -3,6 +3,8 @@ import React from 'react';
 import './Footer.css';
 
 const Footer: React.FC = () => {
+  const currentYear = new Date().getFullYear();
+
   return (
     <footer className="footer">
       <div className="container">
@@ -12,7 +14,7 @@ const Footer: React.FC = () => {
             <p>г. Севастополь, ул. 6-я Бастионная, 40, 2й этаж</p>
             <p>Вход со двора</p>
             <p>
-              <a href="tel:+79788590384">+7 (978) 859-03-84</a>
+              <a href="tel:+79788590384" aria-label="Позвонить по телефону">+7 (978) 859-03-84</a>
             </p>
             <p>Пн-Сб: 9:30-20:00</p>
             <p>Вс: выходной</p>
@@ -31,13 +33,13 @@ const Footer: React.FC = () => {
           <div className="footer-section">
             <h3>Социальные сети</h3>
             <div className="social-links">
-              <a href="https://t.me/79788590384" target="_blank" rel="noopener noreferrer">
+              <a href="https://t.me/79788590384" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
                 Telegram
               </a>
-              <a href="https://wa.me/79788590384" target="_blank" rel="noopener noreferrer">
+              <a href="https://wa.me/79788590384" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
                 WhatsApp
               </a>
-              <a href="https://vk.com/egosevastopol" target="_blank" rel="noopener noreferrer">
+              <a href="https://vk.com/egosevastopol" target="_blank" rel="noopener noreferrer" aria-label="VKontakte">
                 VKontakte
               </a>
             </div>
@@ -45,7 +47,7 @@ const Footer: React.FC = () => {
         </div>
         
         <div className="footer-bottom">
-          <p>&copy; 2024 Салон красоты Ego. Все права защищены.</p>
+          <p>&copy; {currentYear} Салон красоты Ego. Все права защищены.</p>
         </div>
       </div>
     </footer>

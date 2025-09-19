@@ -13,7 +13,7 @@ const Header: React.FC = () => {
       setIsScrolled(window.scrollY > 50);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -29,18 +29,23 @@ const Header: React.FC = () => {
     <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
       <div className="container">
         <div className="header-content">
-          <Link to="/" className="logo">
+          <Link to="/" className="logo" aria-label="Салон красоты Ego - главная страница">
             <h1>Ego</h1>
           </Link>
           
-          <nav className={`nav ${isMenuOpen ? 'nav-open' : ''}`}>
+          <nav className={`nav ${isMenuOpen ? 'nav-open' : ''}`} aria-label="Основная навигация">
             <Link to="/" className="nav-link">Главная</Link>
             <Link to="/services" className="nav-link">Услуги</Link>
             <Link to="/about" className="nav-link">О нас</Link>
             <Link to="/contacts" className="nav-link">Контакты</Link>
           </nav>
 
-          <button className="menu-toggle" onClick={toggleMenu}>
+          <button 
+            className="menu-toggle" 
+            onClick={toggleMenu}
+            aria-label="Открыть меню"
+            aria-expanded={isMenuOpen}
+          >
             <span></span>
             <span></span>
             <span></span>
@@ -49,3 +54,6 @@ const Header: React.FC = () => {
       </div>
     </header>
   );
+};
+
+export default Header;
